@@ -1,0 +1,18 @@
+#Hummingbird parameters
+inertia : [ 0.007 , 0.000000 , 0.000000 , 0.000000 , 0.007 , 0.000000 , 0.000000 , 0.000000 , 0.012]
+allocation_matrix: [ 0.0 , -1.0 , 1.0 , 1.0 , 1.0 , 0.0 , -1.0 , 1.0, 0.0, 1.0, 1.0, 1.0, -1.0, 0.0, -1.0, 1.0]
+n_rotors: 4
+
+rotor_force_constant: 8.54858e-6
+rotor_moment_constant: 0.016000
+arm_length: 0.17
+
+roll_gain: 60
+pitch_gain: 60
+roll_int_gain: 1.0
+pitch_int_gain: 1.0
+p_gain: 25
+q_gain: 22
+r_gain: 1.0
+
+max_integrator_error: 0.6

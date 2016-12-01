@@ -1,0 +1,9 @@
+<launch>
+  <arg name="namespace" default="firefly" />
+  <group ns="$(arg namespace)">
+    <node name="PID_attitude_controller" pkg="mav_lowlevel_attitude_controller" type="PID_attitude_controller_node" respawn="true" clear_params="true" output="screen">
+      <remap from="odometry" to="ground_truth/odometry" />
+      <rosparam file="$(find mav_lowlevel_attitude_controller)/resources/PID_attitude.yaml" />
+    </node>
+  </group>
+</launch>
