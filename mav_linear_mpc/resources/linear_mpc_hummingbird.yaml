@@ -1,0 +1,57 @@
+#==================================================================================================================
+#
+# Project:	MPC for multirotor systems.
+#
+# function:	MPC Position controller parameters
+#
+# Author:	Mina Kamel	mina.kamel@ethz.ch
+#
+# Ge:nerated:	03-Apr-2015 13:11:59
+#
+#==================================================================================================================
+
+## Controller Parameters:
+mass: 0.7
+roll_time_constant: 0.2
+pitch_time_constant: 0.23
+roll_gain: 0.85
+pitch_gain: 0.86
+drag_coefficients: [ 0.010000 , 0.010000, 0.0000]
+
+q_x: 40
+q_y: 40
+q_z: 60
+
+q_vx: 20
+q_vy: 20
+q_vz: 25
+
+q_roll: 20
+q_pitch: 20
+
+r_roll: 35
+r_pitch: 35
+r_thrust: 2
+
+r_droll: 0.3
+r_dpitch: 0.3
+r_dthrust: 0.0025
+
+roll_max: deg(25.0)
+pitch_max: deg(25.0)
+yaw_rate_max: deg(90)
+thrust_min: 5 #m/s^2
+thrust_max: 20 #m/s^2
+
+K_yaw: 1.8
+
+Ki_xy: 0.2
+Ki_z: 0.3
+position_error_integration_limit: 2
+antiwindup_ball: 0.4
+
+enable_offset_free : true
+enable_integrator : false
+
+sampling_time: 0.01    #IMPORTANT: set this equal to the rate of odometry msg
+prediction_sampling_time: 0.1
