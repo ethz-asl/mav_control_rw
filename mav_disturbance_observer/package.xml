@@ -1,0 +1,26 @@
+<package format="2">
+  <name>mav_disturbance_observer</name>
+  <version>1.0.0</version>
+  <description>mav disturbance observers libraries</description>
+
+  <maintainer email="mina.kamel@mavt.ethz.ch">Mina Kamel</maintainer>
+
+  <author>Mina Kamel</author>
+  <author>Fadri Furrer</author>
+  <author>Michael Burri</author>
+  <author>Janosch Nikolic</author>
+  <author>Markus Achtelik</author>
+
+  <license>ASL 2.0</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>catkin_simple</buildtool_depend>
+
+  <depend>dynamic_reconfigure</depend>
+  <depend>mav_msgs</depend>
+  <depend>roscpp</depend>
+  <depend>cmake_modules</depend>
+  <depend>tf</depend>
+  <depend>message_generation</depend>
+  <depend>eigen_catkin</depend>
+</package>
