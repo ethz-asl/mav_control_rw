@@ -200,7 +200,7 @@ void NonlinearModelPredictiveControl::setOdometry(const mav_msgs::EigenOdometry&
 
   if (!received_first_odometry_) {
     Eigen::Vector3d euler_angles;
-    odometry.getEulerAngles(euler_angles);
+    odometry.getEulerAngles(&euler_angles);
 
     Eigen::VectorXd x0(ACADO_NX);
 
@@ -287,7 +287,7 @@ void NonlinearModelPredictiveControl::calculateRollPitchYawrateThrustCommand(
   Eigen::Matrix<double, ACADO_NX, 1> x_0;
 
   Eigen::Vector3d current_rpy;
-  odometry_.getEulerAngles(current_rpy);
+  odometry_.getEulerAngles(&current_rpy);
 
   mpc_queue_.updateQueue();
   mpc_queue_.getQueue(position_ref_, velocity_ref_, acceleration_ref_, yaw_ref_, yaw_rate_ref_);

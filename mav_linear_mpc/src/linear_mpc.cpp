@@ -265,7 +265,7 @@ void LinearModelPredictiveController::setOdometry(const mav_msgs::EigenOdometry&
 
   if (!received_first_odometry_) {
     Eigen::Vector3d euler_angles;
-    odometry.getEulerAngles(euler_angles);
+    odometry.getEulerAngles(&euler_angles);
 
     Eigen::VectorXd x0;
 
@@ -336,7 +336,7 @@ void LinearModelPredictiveController::calculateRollPitchYawrateThrustCommand(
   Eigen::Matrix<double, kStateSize, 1> x_0;
 
   Eigen::Vector3d current_rpy;
-  odometry_.getEulerAngles(current_rpy);
+  odometry_.getEulerAngles(&current_rpy);
 
   double roll;
   double pitch;

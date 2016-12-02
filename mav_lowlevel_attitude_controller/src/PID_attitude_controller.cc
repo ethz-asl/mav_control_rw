@@ -157,7 +157,7 @@ void PIDAttitudeController::ComputeDesiredAngularAcc(Eigen::Vector3d* angular_ac
   assert(angular_acc);
 
   Eigen::Vector3d current_rpy;
-  odometry_.getEulerAngles(current_rpy);
+  odometry_.getEulerAngles(&current_rpy);
 
   double error_roll = attitude_thrust_reference_(0) - current_rpy(0);
   double error_pitch = attitude_thrust_reference_(1) - current_rpy(1);
