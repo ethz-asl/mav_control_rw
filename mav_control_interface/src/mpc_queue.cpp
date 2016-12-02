@@ -23,11 +23,11 @@ MPCQueue::MPCQueue(const ros::NodeHandle& nh, const ros::NodeHandle& private_nh,
     : nh_(nh),
       private_nh_(private_nh),
       mpc_queue_size_(mpc_queue_size),
-	    maximum_queue_size_(10000),
+      maximum_queue_size_(10000),
       current_queue_size_(0),
       initialized_(false),
-	    prediction_sampling_time_(0.01),
-	    queue_dt_(0.01),
+      prediction_sampling_time_(0.01),
+      queue_dt_(0.01),
       queue_start_time_(0.0)
 {
   trajectory_reference_vis_publisher_ = nh_.advertise<visualization_msgs::Marker>( "reference_trajectory", 0 );
@@ -196,7 +196,6 @@ void MPCQueue::pushBackPoint(const mav_msgs::EigenTrajectoryPoint& point)
 
 void MPCQueue::shrinkQueueToMinimum()
 {
-
   while (current_queue_size_ > minimum_queue_size_) {
     popBackPoint();
   }
@@ -241,7 +240,6 @@ void MPCQueue::getLastPoint(mav_msgs::EigenTrajectoryPoint* point)
 
 void MPCQueue::updateQueue()
 {
-
   if (initialized_) {
     popFrontPoint();
 
