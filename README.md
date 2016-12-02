@@ -7,11 +7,77 @@ Overview
 ------
 
 This repository contains controllers for rotary wing MAVs. Currently we support the following controllers:
-- *mav_linear_mpc* : Linear MPC for mav trajectory tracking
+- *mav_linear_mpc* : Linear MPC for MAV trajectory tracking
 - *mav_nonlinear_mpc* : Nonlinear MPC for MAV trajectory tracking
 - *PID_attitude_control* : low level PID attitude controller 
 
 Moreover, an external disturbance observer based on Kalman Filter is implemented to achieve offset-free tracking. 
+
+Installation instructions
+------
+
+To run the controller with RotorS simulator (https://github.com/ethz-asl/rotors_simulator), follow these instructions:
+
+* Install and initialize ROS indigo desktop full, additional ROS packages, catkin-tools:
+  
+```sh
+  $ sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu `lsb_release -sc` main" > /etc/apt/sources.list.d/ros-latest.list'
+  $ wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
+  $ sudo apt-get update
+  $ sudo apt-get install ros-indigo-desktop-full ros-indigo-joy ros-indigo-octomap-ros python-wstool python-catkin-tools
+  $ sudo rosdep init
+  $ rosdep update
+  $ source /opt/ros/indigo/setup.bash
+```
+* Initialize catkin workspace:
+```sh
+  $ mkdir -p ~/catkin_ws/src
+  $ cd ~/catkin_ws
+  $ catkin config --cmake-args -DCMAKE_BUILD_TYPE=Release
+  $ catkin init  # initialize your catkin workspace
+```
+* Get the controllers and dependencies
+```sh
+  $ sudo apt-get install liblapacke-dev
+  $ git clone https://github.com/ethz-asl/rotors_simulator.git
+  $ git clone -b 3.1.0 https://github.com/ethz-asl/mav_comm.git
+  $ git clone https://github.com/ethz-asl/eigen_catkin.git
+
+  $ git clone https://github.com/ethz-asl/mav_control_rw.git
+```
+* Build the workspace  
+```sh
+  $ catkin build
+```
+
+* Run the simulator and the linear MPC. In seperate terminals run the following commands
+  
+```sh
+  $ roslaunch rotors_gazebo mav.launch mav_name:=firefly
+```
+```sh
+  $ roslaunch mav_linear_mpc mav_linear_mpc_sim.launch mav_name:=firefly
+```
+You can use `rqt` to publish commands to the controller.
+
+
+To run the controller with the multi sensor fusion (MSF) framewok (https://github.com/ethz-asl/ethzasl_msf):
+* Get msf
+```sh
+  $ git clone https://github.com/ethz-asl/ethzasl_msf.git
+```
+
+* Run the simulator, the linear MPC and MSF, in seperate terminals run the following commands
+  
+```sh
+  $ roslaunch rotors_gazebo mav.launch mav_name:=firefly
+```
+```sh
+  $ roslaunch mav_linear_mpc mav_linear_mpc_sim_msf.launch mav_name:=firefly
+```
+
+Don't forget to initialize MSF. 
+
 
 Published and subscribed topics
 ------
@@ -52,7 +118,7 @@ A summary of the linear and nonlinear MPC parameters:
 | `use_rc_teleop`       | enable RC teleoperation. Set to `false` in case of simulation.                  |
 | `reference_frame`     | the name of the reference frame.                                                |
 | `verbose`             | controller prints on screen debugging information and computation time          |
-| `mass`                | vehcile mass                                                                    | 
+| `mass`                | vehicle mass                                                                    | 
 | `roll_time_constant`  | time constant of roll first order model                                         |
 | `pitch_time_constant` | time constant of pitch first order model                                        |
 |`roll_gain`            | gain of roll first order model                                                  |
