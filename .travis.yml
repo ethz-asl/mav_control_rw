@@ -45,6 +45,10 @@ before_script:
   - git clone https://github.com/ethz-asl/mav_comm.git
   - git clone https://github.com/ethz-asl/eigen_catkin.git
   - git clone https://github.com/catkin/catkin_simple.git
+  - wstool init
+  - wstool up
+  - cd ~/catkin_ws
+  - rosdep install -y --from-paths src --ignore-src --rosdistro $ROS_DISTRO
 
 script:
   - cd ~/catkin_ws
