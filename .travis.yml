@@ -1,0 +1,52 @@
+dist: trusty
+sudo: required
+language: generic
+compiler:
+  - gcc
+cache:
+  - apt
+
+env:
+  global:
+    #- ROS_DISTRO=jade
+    - ROS_CI_DESKTOP="$(lsb_release -cs)"
+    - CI_SOURCE_PATH=$(pwd)
+    - ROSINSTALL_FILE=$CI_SOURCE_PATH/dependencies.rosinstall
+    - ROS_PARALLEL_JOBS='-j8 -l6'
+
+  matrix:
+    - ROS_DISTRO=indigo
+    - ROS_DISTRO=jade
+
+before_install:
+  - sudo sh -c "echo \"deb http://packages.ros.org/ros/ubuntu $ROS_CI_DESKTOP main\" > /etc/apt/sources.list.d/ros-latest.list"
+  #- sudo sh -c "echo \"deb http://packages.ros.org/ros-shadow-fixed/ubuntu $ROS_CI_DESKTOP main\" > /etc/apt/sources.list.d/ros-latest.list"
+  - wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq -y python-catkin-pkg python-rosdep python-wstool ros-$ROS_DISTRO-catkin python-catkin-tools
+  - sudo apt-get install liblapacke-dev
+  - source /opt/ros/$ROS_DISTRO/setup.bash
+  # Prepare rosdep
+  - sudo rosdep init
+  - rosdep update
+
+install:
+  # Create catkin workspace
+  - mkdir -p ~/catkin_ws
+  - cd ~/catkin_ws
+  - catkin init
+  - catkin config --cmake-args -DCMAKE_BUILD_TYPE=Release
+  - catkin build
+  - source devel/setup.bash
+  - ln -s $CI_SOURCE_PATH .
+
+before_script:
+  - cd ~/catkin_ws/src
+  - git clone https://github.com/ethz-asl/mav_comm.git
+  - git clone https://github.com/ethz-asl/eigen_catkin.git
+
+script:
+  - cd ~/catkin_ws
+  - source devel/setup.bash
+  - catkin build
+  #- catkin_test_results --all ~/catkin_ws/build
