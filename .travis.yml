@@ -38,10 +38,10 @@ install:
   - catkin config --cmake-args -DCMAKE_BUILD_TYPE=Release
   - catkin build
   - source devel/setup.bash
-  - ln -s $CI_SOURCE_PATH .
-
+  
 before_script:
   - cd ~/catkin_ws/src
+  - ln -s $CI_SOURCE_PATH .
   - git clone https://github.com/ethz-asl/mav_comm.git
   - git clone https://github.com/ethz-asl/eigen_catkin.git
   - git clone https://github.com/catkin/catkin_simple.git
