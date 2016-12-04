@@ -40,7 +40,7 @@ To run the controller with RotorS simulator (https://github.com/ethz-asl/rotors_
 ```sh
   $ sudo apt-get install liblapacke-dev
   $ git clone https://github.com/ethz-asl/rotors_simulator.git
-  $ git clone -b 3.1.0 https://github.com/ethz-asl/mav_comm.git
+  $ git clone https://github.com/ethz-asl/mav_comm.git
   $ git clone https://github.com/ethz-asl/eigen_catkin.git
 
   $ git clone https://github.com/ethz-asl/mav_control_rw.git
