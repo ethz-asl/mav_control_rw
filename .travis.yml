@@ -44,6 +44,7 @@ before_script:
   - cd ~/catkin_ws/src
   - git clone https://github.com/ethz-asl/mav_comm.git
   - git clone https://github.com/ethz-asl/eigen_catkin.git
+  - git clone https://github.com/catkin/catkin_simple.git
 
 script:
   - cd ~/catkin_ws
