@@ -36,16 +36,12 @@
 #include <mav_msgs/conversions.h>
 #include <mav_msgs/eigen_mav_msgs.h>
 #include <stdio.h>
-#include <lapacke.h>
-
 #include <mav_control_interface/mpc_queue.h>
-
 #include "acado_common.h"
 #include "acado_auxiliary_functions.h"
-
 #include <mav_disturbance_observer/KF_disturbance_observer.h>
-
 #include <std_srvs/Empty.h>
+#include <lapacke.h>
 
 ACADOvariables acadoVariables;
 ACADOworkspace acadoWorkspace;
