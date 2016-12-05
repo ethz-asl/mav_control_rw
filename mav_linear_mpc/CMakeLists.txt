@@ -29,11 +29,8 @@ cs_add_library(cvxgen_solver
 )
 
 
-if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64" AND NOT APPLE)
-  target_link_libraries(mav_linear_mpc ${CMAKE_SOURCE_DIR}/lib/libmav_linear_mpc_cvxgen_solver.so)
-else()
-  target_link_libraries(mav_linear_mpc cvxgen_solver)
-endif()
+target_link_libraries(mav_linear_mpc cvxgen_solver)
+
 
 ############
 # BINARIES #
