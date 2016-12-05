@@ -489,10 +489,10 @@ void LinearModelPredictiveController::calculateRollPitchYawrateThrustCommand(
   if (verbose_) {
     static int counter = 0;
     if (counter > 100) {
-      ROS_INFO_STREAM("average solve time: " << solve_time_average_ / counter);
+      ROS_INFO_STREAM("average solve time: " << solve_time_average_ / counter << " ms");
       solve_time_average_ = 0.0;
 
-      ROS_INFO_STREAM("Controller loop time : " << diff_time << " sec");
+      ROS_INFO_STREAM("Controller loop time : " << diff_time*1000.0 << " ms");
 
       ROS_INFO_STREAM(
           "roll ref: " << command_roll_pitch_yaw_thrust_(0)
