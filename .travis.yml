@@ -49,9 +49,7 @@ before_script:
   - wstool up >> /dev/null
   - cd ~/catkin_ws
   - rosdep install -y --from-paths src --ignore-src --rosdistro $ROS_DISTRO >> /dev/null
-
-script:
   - cd ~/catkin_ws
   - source devel/setup.bash
-  - travis_wait catkin build >> /dev/null
-  #- catkin_test_results --all ~/catkin_ws/build
+
+script: travis_wait 40 catkin build --no-status
