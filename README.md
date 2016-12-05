@@ -1,4 +1,4 @@
-mav_control_rw
+mav_control_rw [![Build Status](https://travis-ci.org/ethz-asl/mav_control_rw.svg?branch=master)](https://travis-ci.org/ethz-asl/mav_control_rw)
 ======
 
 Control strategies for rotary wing Micro Aerial Vehicles (MAVs) using ROS
