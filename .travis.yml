@@ -36,6 +36,7 @@ install:
   - cd ~/catkin_ws
   - catkin init >> /dev/null
   - catkin config --cmake-args -DCMAKE_BUILD_TYPE=Release >> /dev/null
+  - catkin build >> /dev/null
   - source devel/setup.bash
   
 before_script:
