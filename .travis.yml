@@ -22,33 +22,32 @@ before_install:
   - sudo sh -c "echo \"deb http://packages.ros.org/ros/ubuntu $ROS_CI_DESKTOP main\" > /etc/apt/sources.list.d/ros-latest.list"
   #- sudo sh -c "echo \"deb http://packages.ros.org/ros-shadow-fixed/ubuntu $ROS_CI_DESKTOP main\" > /etc/apt/sources.list.d/ros-latest.list"
   - wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq -y python-catkin-pkg python-rosdep python-wstool ros-$ROS_DISTRO-catkin python-catkin-tools
-  - sudo apt-get install liblapacke-dev
+  - sudo apt-get -qq update
+  - sudo apt-get -qq install -y python-catkin-pkg python-rosdep python-wstool ros-$ROS_DISTRO-catkin python-catkin-tools
+  - sudo apt-get -qq install liblapacke-dev
   - source /opt/ros/$ROS_DISTRO/setup.bash
   # Prepare rosdep
-  - sudo rosdep init
-  - rosdep update
+  - sudo rosdep init >> /dev/null
+  - rosdep update >> /dev/null
 
 install:
   # Create catkin workspace
   - mkdir -p ~/catkin_ws/src
   - cd ~/catkin_ws
-  - catkin init
-  - catkin config --cmake-args -DCMAKE_BUILD_TYPE=Release
-  - catkin build
+  - catkin init >> /dev/null
+  - catkin config --cmake-args -DCMAKE_BUILD_TYPE=Release >> /dev/null
   - source devel/setup.bash
   
 before_script:
   - cd ~/catkin_ws/src
   - ln -s $CI_SOURCE_PATH .
-  - git clone https://github.com/ethz-asl/mav_comm.git
-  - git clone https://github.com/ethz-asl/eigen_catkin.git
-  - git clone https://github.com/catkin/catkin_simple.git
-  - wstool init
-  - wstool up
+  - git clone https://github.com/ethz-asl/mav_comm.git >> /dev/null
+  - git clone https://github.com/ethz-asl/eigen_catkin.git >> /dev/null
+  - git clone https://github.com/catkin/catkin_simple.git >> /dev/null
+  - wstool init >> /dev/null
+  - wstool up >> /dev/null
   - cd ~/catkin_ws
-  - rosdep install -y --from-paths src --ignore-src --rosdistro $ROS_DISTRO
+  - rosdep install -y --from-paths src --ignore-src --rosdistro $ROS_DISTRO >> /dev/null
 
 script:
   - cd ~/catkin_ws
