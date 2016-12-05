@@ -10,6 +10,8 @@ if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64" AND NOT APPLE)
   add_definitions(-fPIC)
 endif()
 
+include_directories(lib)
+
 #############
 # LIBRARIES #
 #############
@@ -18,11 +20,19 @@ cs_add_library(mav_linear_mpc
   src/steady_state_calculation.cpp
 )
 
+cs_add_library(cvxgen_solver 
+  lib/ldl.c
+  lib/solver.c
+  lib/matrix_support.c
+  lib/util.c
+  lib/variables_definition.c
+)
+
 
 if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64" AND NOT APPLE)
   target_link_libraries(mav_linear_mpc ${CMAKE_SOURCE_DIR}/lib/libmav_linear_mpc_cvxgen_solver.so)
 else()
-  target_link_libraries(mav_linear_mpc ${CMAKE_SOURCE_DIR}/lib/libmav_linear_mpc_cvxgen_solver.dylib)
+  target_link_libraries(mav_linear_mpc cvxgen_solver)
 endif()
 
 ############

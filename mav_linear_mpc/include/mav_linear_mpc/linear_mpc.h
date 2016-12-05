@@ -47,7 +47,7 @@
 #include <iostream>
 #include <unsupported/Eigen/MatrixFunctions>
 
-#include <mav_linear_mpc/solver.h>
+#include <solver.h>
 
 namespace mav_control {
 
