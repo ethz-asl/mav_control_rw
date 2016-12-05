@@ -342,6 +342,11 @@ void LinearModelPredictiveController::calculateRollPitchYawrateThrustCommand(
   double pitch;
   double yaw;
 
+  // update mpc queue
+  mpc_queue_.updateQueue();
+  // Copy out the whole queues
+  mpc_queue_.getQueue(position_ref_, velocity_ref_, acceleration_ref_, yaw_ref_, yaw_rate_ref_);
+
   // update the disturbance observer
   disturbance_observer_.feedAttitudeCommand(command_roll_pitch_yaw_thrust_);
   disturbance_observer_.feedPositionMeasurement(odometry_.position_W);
@@ -385,10 +390,6 @@ void LinearModelPredictiveController::calculateRollPitchYawrateThrustCommand(
         * position_error_integration_;
   }
 
-  // update mpc queue
-  mpc_queue_.updateQueue();
-  // Copy out the whole queues
-  mpc_queue_.getQueue(position_ref_, velocity_ref_, acceleration_ref_, yaw_ref_, yaw_rate_ref_);
 
   Eigen::Matrix<double, kStateSize, 1> target_state;
   Eigen::Matrix<double, kInputSize, 1> target_input;
