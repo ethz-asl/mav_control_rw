@@ -50,8 +50,8 @@ before_script:
   - cd ~/catkin_ws
   - rosdep install -y --from-paths src --ignore-src --rosdistro $ROS_DISTRO >> /dev/null
 
-script: travis_wait 50
+script:
   - cd ~/catkin_ws
   - source devel/setup.bash
-  - catkin build >> /dev/null
+  - travis_wait 50 catkin build >> /dev/null
   #- catkin_test_results --all ~/catkin_ws/build
