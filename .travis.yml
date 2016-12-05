@@ -53,5 +53,5 @@ before_script:
 script:
   - cd ~/catkin_ws
   - source devel/setup.bash
-  - travis_wait 50 catkin build >> /dev/null
+  - travis_wait catkin build >> /dev/null
   #- catkin_test_results --all ~/catkin_ws/build
