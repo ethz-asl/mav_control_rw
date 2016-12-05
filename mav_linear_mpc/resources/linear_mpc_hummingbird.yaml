@@ -51,7 +51,7 @@ position_error_integration_limit: 2
 antiwindup_ball: 0.4
 
 enable_offset_free : true
-enable_integrator : false
+enable_integrator : true
 
 sampling_time: 0.01    #IMPORTANT: set this equal to the rate of odometry msg
 prediction_sampling_time: 0.1
