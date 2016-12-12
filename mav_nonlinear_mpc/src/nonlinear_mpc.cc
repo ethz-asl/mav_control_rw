@@ -41,7 +41,7 @@ NonlinearModelPredictiveControl::NonlinearModelPredictiveControl(const ros::Node
       private_nh_(private_nh),
       initialized_parameters_(false),
       position_error_integration_(0, 0, 0),
-      mpc_queue_(nh, private_nh, ACADO_N),
+      mpc_queue_(nh, private_nh, ACADO_N+1),
       command_roll_pitch_yaw_thrust_(0, 0, 0, 0),
       disturbance_observer_(nh, private_nh),
       verbose_(false),
