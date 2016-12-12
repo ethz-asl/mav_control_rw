@@ -349,6 +349,7 @@ void NonlinearModelPredictiveControl::calculateRollPitchYawrateThrustCommand(
     acado_online_data_.block(i, ACADO_NOD - 3, 1, 3) << estimated_disturbances.transpose();
   }
   referenceN_ << position_ref_[ACADO_N].transpose(), velocity_ref_[ACADO_N].transpose();
+  acado_online_data_.block(ACADO_N, ACADO_NOD - 3, 1, 3) << estimated_disturbances.transpose();
 
   x_0 << odometry_.getVelocityWorld(), current_rpy, odometry_.position_W;
 
