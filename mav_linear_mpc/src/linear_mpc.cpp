@@ -479,10 +479,16 @@ void LinearModelPredictiveController::calculateRollPitchYawrateThrustCommand(
   if (yaw_rate_cmd < -yaw_rate_limit_) {
     yaw_rate_cmd = -yaw_rate_limit_;
   }
-
+  
+  ros::Time curTime=ros::Time::now();
+  double err_z=position_ref_.front().z()-odometry_.position_W(2);
+  double output=pid.computeCommand(err_z,curTime-lastTime_);
+  command_roll_pitch_yaw_thrust_(3) = output;
+  lastTime=curTime;
+  
   *ref_attitude_thrust = Eigen::Vector4d(command_roll_pitch_yaw_thrust_(0),
                                          command_roll_pitch_yaw_thrust_(1), yaw_rate_cmd,
-                                         command_roll_pitch_yaw_thrust_(3) * mass_);  //[N]
+                                         command_roll_pitch_yaw_thrust_(3)); //z-velocity output.
 
   double diff_time = (ros::WallTime::now() - starting_time).toSec();
 
