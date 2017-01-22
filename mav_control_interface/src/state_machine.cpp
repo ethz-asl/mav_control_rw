@@ -25,21 +25,23 @@ namespace mav_control_interface {
 
 namespace state_machine {
 
-StateMachineDefinition::StateMachineDefinition(ros::NodeHandle& nh, ros::NodeHandle& private_nh,
+StateMachineDefinition::StateMachineDefinition(const ros::NodeHandle& nh, const ros::NodeHandle& private_nh,
                                                std::shared_ptr<PositionControllerInterface> controller)
-    :controller_(controller)
+    :nh_(nh),
+     private_nh_(private_nh),
+     controller_(controller)
 {
-  command_publisher_ = nh.advertise<mav_msgs::RollPitchYawrateThrust>(
+  command_publisher_ = nh_.advertise<mav_msgs::RollPitchYawrateThrust>(
       mav_msgs::default_topics::COMMAND_ROLL_PITCH_YAWRATE_THRUST, 1);
 
-  current_reference_publisher_ = nh.advertise<trajectory_msgs::MultiDOFJointTrajectory>(
+  current_reference_publisher_ = nh_.advertise<trajectory_msgs::MultiDOFJointTrajectory>(
       "command/current_reference", 1);
 
-  state_info_publisher_ = nh.advertise<std_msgs::String>("state_machine/state_info", 1, true);
+  state_info_publisher_ = nh_.advertise<std_msgs::String>("state_machine/state_info", 1, true);
 
-  private_nh.param<bool>("use_rc_teleop", use_rc_teleop_, true);
-  private_nh.param<std::string>("reference_frame", reference_frame_id_, "odom");
-  predicted_state_publisher_ = nh.advertise<visualization_msgs::Marker>( "predicted_state", 0 );
+  private_nh_.param<bool>("use_rc_teleop", use_rc_teleop_, true);
+  private_nh_.param<std::string>("reference_frame", reference_frame_id_, "odom");
+  predicted_state_publisher_ = nh_.advertise<visualization_msgs::Marker>( "predicted_state", 0 );
 }
 
 void StateMachineDefinition::SetParameters(const Parameters& parameters)
@@ -87,7 +89,7 @@ void StateMachineDefinition::PublishCurrentReference()
   transform.setRotation(q);
 
   transform_broadcaster_.sendTransform(
-      tf::StampedTransform(transform, time_now, reference_frame_id_, "current_reference"));
+      tf::StampedTransform(transform, time_now, reference_frame_id_, nh_.getNamespace() + "/current_reference"));
 
   if (current_reference_publisher_.getNumSubscribers() > 0) {
     trajectory_msgs::MultiDOFJointTrajectoryPtr msg(new trajectory_msgs::MultiDOFJointTrajectory);
