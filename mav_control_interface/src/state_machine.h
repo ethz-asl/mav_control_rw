@@ -97,6 +97,9 @@ typedef boost::msm::back::state_machine<StateMachineDefinition, boost::msm::back
 class StateMachineDefinition : public msm_front::state_machine_def<StateMachineDefinition>
 {
  private:
+  ros::NodeHandle nh_;
+  ros::NodeHandle private_nh_;
+
   // States, more convenient to have in state machine.
   struct Inactive;
   struct RemoteControl;
@@ -175,7 +178,7 @@ class StateMachineDefinition : public msm_front::state_machine_def<StateMachineD
   };
 
  public:
-  StateMachineDefinition(ros::NodeHandle& nh, ros::NodeHandle& private_nh,
+  StateMachineDefinition(const ros::NodeHandle& nh, const ros::NodeHandle& private_nh,
                          std::shared_ptr<PositionControllerInterface> controller);
 
   template<class Event, class FSM>
