@@ -482,7 +482,7 @@ void LinearModelPredictiveController::calculateRollPitchYawrateThrustCommand(
   
   ros::Time curTime=ros::Time::now();
   double err_z=position_ref_.front().z()-odometry_.position_W(2);
-  double output=pid.computeCommand(err_z,curTime-lastTime_);
+  double output=pid.computeCommand(err_z,curTime-lastTime);
   command_roll_pitch_yaw_thrust_(3) = output;
   lastTime=curTime;
   
