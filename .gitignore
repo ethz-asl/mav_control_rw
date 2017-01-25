@@ -27,3 +27,4 @@
 *.cproject
 *.settings*
 *.DS_Store
+*.idea*
