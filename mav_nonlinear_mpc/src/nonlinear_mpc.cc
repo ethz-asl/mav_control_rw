@@ -342,10 +342,10 @@ void NonlinearModelPredictiveControl::calculateRollPitchYawrateThrustCommand(
         * acceleration_ref_[i];
 
     Eigen::Vector2d feed_forward(
-        ((estimated_disturbances_B(1) - acceleration_ref_B(1)) / kGravity),
-        ((-estimated_disturbances_B(0) + acceleration_ref_B(0)) / kGravity));
+        (-(acceleration_ref_B(1) - estimated_disturbances_B(1)) / kGravity),
+        ((acceleration_ref_B(0) - estimated_disturbances_B(0)) / kGravity));
     reference_.block(i, 0, 1, ACADO_NY) << position_ref_[i].transpose(), velocity_ref_[i].transpose(), feed_forward
-        .transpose(), feed_forward.transpose(), acceleration_ref_[i].z();
+        .transpose(), feed_forward.transpose(), acceleration_ref_[i].z() - estimated_disturbances(2);
     acado_online_data_.block(i, ACADO_NOD - 3, 1, 3) << estimated_disturbances.transpose();
   }
   referenceN_ << position_ref_[ACADO_N].transpose(), velocity_ref_[ACADO_N].transpose();
