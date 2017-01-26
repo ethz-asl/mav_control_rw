@@ -15,6 +15,7 @@
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #    
 
+
 UNAME := $(shell uname)
 
 LDLIBS = -lm -lstdc++
@@ -40,29 +41,29 @@ OBJECTS = \
 	./qpoases/SRC/SubjectTo.o \
 	./qpoases/SRC/Utils.o \
 	./qpoases/SRC/EXTRAS/SolutionAnalysis.o \
-	@MODULE_NAME@_qpoases_interface.o \
-	@MODULE_NAME@_integrator.o \
-	@MODULE_NAME@_solver.o \
-	@MODULE_NAME@_auxiliary_functions.o
+	acado_qpoases_interface.o \
+	acado_integrator.o \
+	acado_solver.o \
+	acado_auxiliary_functions.o
 
 .PHONY: all
-all: lib@MODULE_NAME@_exported_rti.a test
+all: libacado_exported_rti.a test
 
 test: ${OBJECTS} test.o
 
-@MODULE_NAME@_qpoases_interface.o   : @MODULE_NAME@_qpoases_interface.hpp
-@MODULE_NAME@_solver.o              : @MODULE_NAME@_common.h
-@MODULE_NAME@_integrator.o          : @MODULE_NAME@_common.h
-@MODULE_NAME@_auxiliary_functions.o : @MODULE_NAME@_common.h \
-                              @MODULE_NAME@_auxiliary_functions.h
-test.o                      : @MODULE_NAME@_common.h \
-                              @MODULE_NAME@_qpoases_interface.hpp \
-                              @MODULE_NAME@_auxiliary_functions.h
+acado_qpoases_interface.o   : acado_qpoases_interface.hpp
+acado_solver.o              : acado_common.h
+acado_integrator.o          : acado_common.h
+acado_auxiliary_functions.o : acado_common.h \
+                              acado_auxiliary_functions.h
+test.o                      : acado_common.h \
+                              acado_qpoases_interface.hpp \
+                              acado_auxiliary_functions.h
 
-lib@MODULE_NAME@_exported_rti.a: ${OBJECTS}
+libacado_exported_rti.a: ${OBJECTS}
 	ar r $@ $?
 
-${OBJECTS} : @MODULE_NAME@_qpoases_interface.hpp
+${OBJECTS} : acado_qpoases_interface.hpp
 
 .PHONY : clean
 clean :
