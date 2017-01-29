@@ -46,7 +46,6 @@
 #include <Eigen/Eigen>
 #include <iostream>
 #include <unsupported/Eigen/MatrixFunctions>
-#include <control_toolbox/pid.h>
 
 #include <solver.h>
 
@@ -105,15 +104,6 @@ class LinearModelPredictiveController
     enable_integrator_ = enable_integrator;
   }
   
-  void setHeightVelGain(double Kp_dz,double Ki_dz,double Kd_dz,double Ki_max_dz,double Ki_min_dz){
-    Kp_dz_ = Kp_dz;
-    Ki_dz_ = Ki_dz;
-    Kd_dz_ = Kd_dz;
-    Ki_max_dz_ = Ki_max_dz;
-    Ki_min_dz_ = Ki_min_dz;
-    lastTime=ros::Time::now();
-    pid.initPid(Kp_dz_,Ki_dz_,Kd_dz_,Ki_max_dz_,Ki_min_dz_); //i_max, i_min, integral windup
-  }
 
   void setControlLimits(const Eigen::VectorXd& control_limits)
   {
@@ -144,8 +134,7 @@ class LinearModelPredictiveController
 
   // compute control input
   void calculateRollPitchYawrateThrustCommand(Eigen::Vector4d* ref_attitude_thrust);
-  control_toolbox::Pid pid;
-  ros::Time lastTime;
+
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
  private:
 
@@ -184,6 +173,8 @@ class LinearModelPredictiveController
   double roll_gain_;
   double pitch_time_constant_;
   double pitch_gain_;
+  double vertical_velocity_gain_;
+  double vertical_velocity_time_constant_;
   Eigen::Vector3d drag_coefficients_;
   double mass_;
 

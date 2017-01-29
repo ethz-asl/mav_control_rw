@@ -98,6 +98,11 @@ void LinearModelPredictiveController::initializeParameters()
     abort();
   }
 
+  if (!private_nh_.getParam("vertical_velocity_time_constant", vertical_velocity_time_constant_)) {
+     ROS_ERROR("vertical_velocity_time_constant in MPC is not loaded from ros parameter server");
+     abort();
+   }
+
   if (!private_nh_.getParam("roll_gain", roll_gain_)) {
     ROS_ERROR("roll_gain in MPC is not loaded from ros parameter server");
     abort();
@@ -107,6 +112,11 @@ void LinearModelPredictiveController::initializeParameters()
     ROS_ERROR("pitch_gain in MPC is not loaded from ros parameter server");
     abort();
   }
+
+  if (!private_nh_.getParam("vertical_velocity_gain", vertical_velocity_gain_)) {
+     ROS_ERROR("vertical_velocity_gain in MPC is not loaded from ros parameter server");
+     abort();
+   }
 
   if (!private_nh_.getParam("drag_coefficients", drag_coefficients)) {
     ROS_ERROR("drag_coefficients in MPC is not loaded from ros parameter server");
@@ -151,11 +161,11 @@ void LinearModelPredictiveController::initializeParameters()
   A_continous_time(3, 7) = kGravity;
   A_continous_time(4, 4) = -drag_coefficients.at(1);
   A_continous_time(4, 6) = -kGravity;
-  A_continous_time(5, 5) = -drag_coefficients.at(2);
+  A_continous_time(5, 5) = -drag_coefficients.at(2) - 1.0/vertical_velocity_time_constant_;
   A_continous_time(6, 6) = -1.0 / roll_time_constant_;
   A_continous_time(7, 7) = -1.0 / pitch_time_constant_;
 
-  B_continous_time(5, 2) = 1.0;
+  B_continous_time(5, 2) = vertical_velocity_gain_/vertical_velocity_time_constant_;
   B_continous_time(6, 0) = roll_gain_ / roll_time_constant_;
   B_continous_time(7, 1) = pitch_gain_ / pitch_time_constant_;
 
@@ -353,8 +363,8 @@ void LinearModelPredictiveController::calculateRollPitchYawrateThrustCommand(
   disturbance_observer_.feedVelocityMeasurement(odometry_.getVelocityWorld());
   disturbance_observer_.feedRotationMatrix(odometry_.orientation_W_B.toRotationMatrix());
 
-  bool observer_update_successful = disturbance_observer_.updateEstimator();
-
+//  bool observer_update_successful = disturbance_observer_.updateEstimator();
+  bool observer_update_successful = true;
   if (!observer_update_successful) {
     // reset the disturbance observer
     disturbance_observer_.reset(odometry_.position_W, odometry_.getVelocityWorld(), current_rpy,
@@ -362,10 +372,11 @@ void LinearModelPredictiveController::calculateRollPitchYawrateThrustCommand(
                                 Eigen::Vector3d::Zero());
   }
 
-  disturbance_observer_.getEstimatedState(&KF_estimated_state);
+//  disturbance_observer_.getEstimatedState(&KF_estimated_state);
 
   if (enable_offset_free_ == true) {
-    estimated_disturbances = KF_estimated_state.segment(12, kDisturbanceSize);
+    estimated_disturbances.setZero();
+//    estimated_disturbances = KF_estimated_state.segment(12, kDisturbanceSize);
   } else {
     estimated_disturbances.setZero();
   }
@@ -448,12 +459,9 @@ void LinearModelPredictiveController::calculateRollPitchYawrateThrustCommand(
         Eigen::Vector3d(roll_limit_, pitch_limit_, thrust_max_));
   }
 
-  command_roll_pitch_yaw_thrust_(3) = (linearized_command_roll_pitch_thrust_(2) + kGravity)
-      / (cos(roll) * cos(pitch));
-  double ux = linearized_command_roll_pitch_thrust_(1)
-      * (kGravity / command_roll_pitch_yaw_thrust_(3));
-  double uy = linearized_command_roll_pitch_thrust_(0)
-      * (kGravity / command_roll_pitch_yaw_thrust_(3));
+  command_roll_pitch_yaw_thrust_(3) = linearized_command_roll_pitch_thrust_(2);
+  double ux = linearized_command_roll_pitch_thrust_(1);
+  double uy = linearized_command_roll_pitch_thrust_(0);
 
   command_roll_pitch_yaw_thrust_(0) = ux * sin(yaw) + uy * cos(yaw);
   command_roll_pitch_yaw_thrust_(1) = ux * cos(yaw) - uy * sin(yaw);
@@ -479,12 +487,6 @@ void LinearModelPredictiveController::calculateRollPitchYawrateThrustCommand(
   if (yaw_rate_cmd < -yaw_rate_limit_) {
     yaw_rate_cmd = -yaw_rate_limit_;
   }
-  
-  ros::Time curTime=ros::Time::now();
-  double err_z=position_ref_.front().z()-odometry_.position_W(2);
-  double output=pid.computeCommand(err_z,curTime-lastTime);
-  command_roll_pitch_yaw_thrust_(3) = output;
-  lastTime=curTime;
   
   *ref_attitude_thrust = Eigen::Vector4d(command_roll_pitch_yaw_thrust_(0),
                                          command_roll_pitch_yaw_thrust_(1), yaw_rate_cmd,
