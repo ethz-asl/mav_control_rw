@@ -13,17 +13,17 @@
   mass: 3.29
   roll_time_constant : 0.472
   pitch_time_constant : 0.411
-  height_velocity_time_constant : 0.334
+  vertical_velocity_time_constant : 0.334
 
   roll_gain : 1.673
   pitch_gain : 1.575
-  height_velocity_gain : 1.118
+  vertical_velocity_gain : 1.118
   drag_coefficients : [ 0.08 , 0.08 , 0.0]
 
 # dynamic config default values:
   q_x : 28.0
   q_y : 28.0
-  q_z : 0.001
+  q_z : 10
 
   q_vx : 0.001
   q_vy : 0.001
@@ -34,7 +34,7 @@
 
   r_roll  : 143.28
   r_pitch : 145.27
-  r_thrust : 0
+  r_thrust : 2
 
   r_droll  : 0.15
   r_dpitch : 0.15
@@ -43,15 +43,16 @@
   roll_max  : deg(18.53) #0.3234 in rad
   pitch_max : deg(18.53) #0.3234 in rad
   
-  thrust_max: 10
+  thrust_max: 2 #m/s
 
   K_yaw : 1.9
   Ki_height : 0.2
-  Kp_dz: 1.7114
-  Ki_dz: 6.1906
-  Kd_dz: 0.7363
-  Ki_max_dz: 0.12
-  Ki_min_dz: -0.12
+
+  #Kp_dz: 1.7114
+  #Ki_dz: 6.1906
+  #Kd_dz: 0.7363
+  #Ki_max_dz: 0.12
+  #Ki_min_dz: -0.12
 
   height_error_integration_limit : 5
   enable_offset_free : true
