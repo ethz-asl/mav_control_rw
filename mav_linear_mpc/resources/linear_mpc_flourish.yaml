@@ -23,22 +23,22 @@
 # dynamic config default values:
   q_x : 60.0
   q_y : 60.0
-  q_z : 40.0
+  q_z : 45.99977
 
   q_vx : 20.0
   q_vy : 20.0
-  q_vz : 11.99994
+  q_vz : 19.9999
 
   q_roll  : 29.99985
   q_pitch : 31.99984
 
   r_roll  : 121.39
   r_pitch : 121.39
-  r_thrust : 2
+  r_thrust : 15.0
 
   r_droll  : 0.15
   r_dpitch : 0.15
-  r_dthrust: 0.0025
+  r_dthrust: 0.001
 
   roll_max  : deg(18.53) #0.3234 in rad
   pitch_max : deg(18.53) #0.3234 in rad 
@@ -47,12 +47,6 @@
 
   K_yaw : 1.9
   Ki_height : 0.2
-
-  #Kp_dz: 1.7114
-  #Ki_dz: 6.1906
-  #Kd_dz: 0.7363
-  #Ki_max_dz: 0.12
-  #Ki_min_dz: -0.12
 
   height_error_integration_limit : 5
   enable_offset_free : true
@@ -68,4 +62,3 @@
   position_error_integration_limit: 2
   antiwindup_ball: 0.4
   enable_integrator : true
-  
