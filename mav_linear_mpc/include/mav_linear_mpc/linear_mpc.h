@@ -111,8 +111,8 @@ class LinearModelPredictiveController
     roll_limit_ = control_limits(0);
     pitch_limit_ = control_limits(1);
     yaw_rate_limit_ = control_limits(2);
-    thrust_min_ = control_limits(3) - kGravity;
-    thrust_max_ = control_limits(4) - kGravity;
+    thrust_min_ = control_limits(3);
+    thrust_max_ = control_limits(4);
   }
 
   void applyParameters();

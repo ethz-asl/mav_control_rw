@@ -21,19 +21,19 @@
   drag_coefficients : [ 0.08 , 0.08 , 0.0]
 
 # dynamic config default values:
-  q_x : 28.0
-  q_y : 28.0
-  q_z : 10
+  q_x : 60.0
+  q_y : 60.0
+  q_z : 40.0
 
-  q_vx : 0.001
-  q_vy : 0.001
-  q_vz : 0.001
+  q_vx : 20.0
+  q_vy : 20.0
+  q_vz : 11.99994
 
-  q_roll  : 64.0
-  q_pitch : 64.0
+  q_roll  : 29.99985
+  q_pitch : 31.99984
 
-  r_roll  : 143.28
-  r_pitch : 145.27
+  r_roll  : 121.39
+  r_pitch : 121.39
   r_thrust : 2
 
   r_droll  : 0.15
@@ -41,8 +41,8 @@
   r_dthrust: 0.0025
 
   roll_max  : deg(18.53) #0.3234 in rad
-  pitch_max : deg(18.53) #0.3234 in rad
-  
+  pitch_max : deg(18.53) #0.3234 in rad 
+  thrust_min: -2 #m/s
   thrust_max: 2 #m/s
 
   K_yaw : 1.9
