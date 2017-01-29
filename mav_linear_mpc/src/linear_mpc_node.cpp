@@ -87,8 +87,6 @@ void LinearModelPredictiveControllerNode::DynConfigCallback(mav_linear_mpc::Line
 
   linear_mpc_.setEnableIntegrator(config.enable_integrator);
   linear_mpc_.setEnableOffsetFree(config.enable_offset_free);
-linear_mpc_.setHeightVelGain(config.Kp_dz,config.Ki_dz,config.Kd_dz,config.Ki_max_dz,config.Ki_min_dz);
-  
   linear_mpc_.applyParameters();
 }
 

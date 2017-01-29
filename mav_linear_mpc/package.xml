@@ -21,5 +21,4 @@
   <depend>mav_control_interface</depend>
   <depend>mav_disturbance_observer</depend>
   <depend>message_runtime</depend>
-  <depend>control_toolbox</depend>
 </package>
