@@ -148,13 +148,16 @@ class StateMachineDefinition : public msm_front::state_machine_def<StateMachineD
       //  +---------+-------------+---------+---------------------------+----------------------+
       msm_front::Row<Inactive, RcUpdate, RemoteControl, NoAction, euml::And_<RcModeManual, RcOn> >,
       msm_front::Row<Inactive, ReferenceUpdate, PositionHold, SetReferencePosition, NoRCTeleop>,
+      msm_front::Row<Inactive, OdometryWatchdog, InternalTransition, PrintOdometryWatchdogWarning, OdometryOutdated >,
       //  +---------+-------------+---------+---------------------------+----------------------+
       msm_front::Row<RemoteControl, RcUpdate, InternalTransition, SetReferenceAttitude, RcModeNotManual >,
       msm_front::Row<RemoteControl, RcUpdate, RemoteControlReadyForOdometry, SetReferenceAttitude, RcModeManual >,
+      msm_front::Row<RemoteControl, OdometryWatchdog, InternalTransition, PrintOdometryWatchdogWarning, OdometryOutdated >,
       //  +---------+-------------+---------+---------------------------+----------------------+
       msm_front::Row<RemoteControlReadyForOdometry, RcUpdate, RemoteControl, SetReferenceAttitude, RcModeNotManual >,
       msm_front::Row<RemoteControlReadyForOdometry, RcUpdate, InternalTransition, SetReferenceAttitude, RcModeManual >,
       msm_front::Row<RemoteControlReadyForOdometry, OdometryUpdate, HaveOdometry, SetOdometry, NoGuard >,
+      msm_front::Row<RemoteControlReadyForOdometry, OdometryWatchdog, RemoteControl, PrintOdometryWatchdogWarning, OdometryOutdated >,
       //  +---------+-------------+---------+---------------------------+----------------------+
       msm_front::Row<HaveOdometry, RcUpdate, InternalTransition, SetReferenceAttitude, RcModeManual >,
       msm_front::Row<HaveOdometry, OdometryUpdate, InternalTransition, SetOdometry, NoGuard >,
@@ -166,13 +169,16 @@ class StateMachineDefinition : public msm_front::state_machine_def<StateMachineD
       msm_front::Row<PositionHold, RcUpdate, RcTeleOp, SetReferenceToCurrentPosition, RcActivePosition >,
       msm_front::Row<PositionHold, OdometryUpdate, InternalTransition, SetOdometryAndCompute, NoGuard>,
       msm_front::Row<PositionHold, ReferenceUpdate, InternalTransition, SetReferencePosition, NoGuard >,
+      msm_front::Row<PositionHold, OdometryWatchdog, RemoteControl, PrintOdometryWatchdogWarning, OdometryOutdated >,
       //  +---------+-------------+---------+---------------------------+----------------------+
       msm_front::Row<RcTeleOp, RcUpdate, RemoteControl, NoAction, RcModeManual>,
       msm_front::Row<RcTeleOp, BackToPositionHold, PositionHold, NoAction, NoGuard>,
       msm_front::Row<RcTeleOp, Takeoff, PositionHold, SetTakeoffCommands, NoGuard>,
       msm_front::Row<RcTeleOp, RcUpdate, InternalTransition, SetReferenceFromRc, RcActivePosition >,
       //msm_front::Row<RcTeleOp, RcUpdate, InternalTransition, SetReferenceToCurrentPosition, RcInactivePosition >,
-      msm_front::Row<RcTeleOp, OdometryUpdate, InternalTransition, SetOdometryAndCompute, NoGuard>
+      msm_front::Row<RcTeleOp, OdometryUpdate, InternalTransition, SetOdometryAndCompute, NoGuard>,
+      msm_front::Row<RcTeleOp, OdometryWatchdog, RemoteControl, PrintOdometryWatchdogWarning, OdometryOutdated >
+
       >
   {
   };
@@ -501,10 +507,16 @@ private:
 
   struct PrintOdometryWatchdogWarning
   {
-    template<class FSM>
-    void operator()(const OdometryWatchdog&, FSM&, HaveOdometry& src_state, RemoteControl&)
+    template<class FSM, class Evt, class SourceState, class TargetState>
+    void operator()(const Evt& evt, FSM& fsm, SourceState&, TargetState&)
     {
-      ROS_WARN("Odometry watchdog triggered -- going back to manual remote control");
+      if (!fsm.use_rc_teleop_) {
+        ROS_WARN_STREAM("No odometry message received in the last "<< kOdometryOutdated_ns/1000000000.0 << " seconds!");
+      } else {
+        ROS_WARN_STREAM(
+            "No odometry message received in the last "<< kOdometryOutdated_ns/1000000000.0 << " seconds!"
+            " -- going back to manual remote control");
+      }
     }
   };
 
