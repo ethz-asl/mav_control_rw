@@ -178,7 +178,6 @@ class StateMachineDefinition : public msm_front::state_machine_def<StateMachineD
       //msm_front::Row<RcTeleOp, RcUpdate, InternalTransition, SetReferenceToCurrentPosition, RcInactivePosition >,
       msm_front::Row<RcTeleOp, OdometryUpdate, InternalTransition, SetOdometryAndCompute, NoGuard>,
       msm_front::Row<RcTeleOp, OdometryWatchdog, RemoteControl, PrintOdometryWatchdogWarning, OdometryOutdated >
-
       >
   {
   };
