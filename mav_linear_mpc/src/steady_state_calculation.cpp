@@ -71,8 +71,8 @@ void SteadyStateCalculation::computeSteadyState(
     Eigen::Matrix<double, kStateSize, 1>* steadystate_state,
     Eigen::Matrix<double, kInputSize, 1>* steadystate_input)
 {
-  assert(steady_state_state);
-  assert(steady_state_input);
+  assert(steadystate_state);
+  assert(steadystate_input);
   assert(initialized_params_);
 
   Eigen::Matrix<double, kStateSize + kInputSize, 1> target_state_and_input;
