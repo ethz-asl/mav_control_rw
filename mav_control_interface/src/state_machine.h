@@ -149,6 +149,7 @@ class StateMachineDefinition : public msm_front::state_machine_def<StateMachineD
       msm_front::Row<Inactive, RcUpdate, RemoteControl, NoAction, euml::And_<RcModeManual, RcOn> >,
       msm_front::Row<Inactive, ReferenceUpdate, PositionHold, SetReferencePosition, NoRCTeleop>,
       msm_front::Row<Inactive, OdometryWatchdog, InternalTransition, PrintOdometryWatchdogWarning, OdometryOutdated >,
+      msm_front::Row<Inactive, OdometryUpdate, InternalTransition, SetOdometry, NoGuard >,
       //  +---------+-------------+---------+---------------------------+----------------------+
       msm_front::Row<RemoteControl, RcUpdate, InternalTransition, SetReferenceAttitude, RcModeNotManual >,
       msm_front::Row<RemoteControl, RcUpdate, RemoteControlReadyForOdometry, SetReferenceAttitude, RcModeManual >,
