@@ -6,6 +6,7 @@ find_package(catkin_simple REQUIRED)
 catkin_simple()
 
 add_definitions(-std=c++11)
+set(CMAKE_BUILD_TYPE Release)
 
 find_package(Eigen REQUIRED)
 include_directories(${Eigen_INCLUDE_DIRS})
