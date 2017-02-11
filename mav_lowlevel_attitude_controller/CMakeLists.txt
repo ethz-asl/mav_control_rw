@@ -5,9 +5,8 @@ find_package(catkin_simple REQUIRED)
 catkin_simple(ALL_DEPS_REQUIRED)
 
 add_definitions(-std=c++11)
-#set(CMAKE_BUILD_TYPE RelWithDebInfo)
+set(CMAKE_BUILD_TYPE Release)
 
-#SET(CMAKE_BUILD_TYPE Debug)
 #############
 # LIBRARIES #
 #############
