@@ -150,6 +150,7 @@ class StateMachineDefinition : public msm_front::state_machine_def<StateMachineD
       msm_front::Row<Inactive, ReferenceUpdate, PositionHold, SetReferencePosition, NoRCTeleop>,
       msm_front::Row<Inactive, OdometryWatchdog, InternalTransition, PrintOdometryWatchdogWarning, OdometryOutdated >,
       msm_front::Row<Inactive, OdometryUpdate, InternalTransition, SetOdometry, NoGuard >,
+      msm_front::Row<Inactive, Takeoff, PositionHold, SetTakeoffCommands, NoRCTeleop>,
       //  +---------+-------------+---------+---------------------------+----------------------+
       msm_front::Row<RemoteControl, RcUpdate, InternalTransition, SetReferenceAttitude, RcModeNotManual >,
       msm_front::Row<RemoteControl, RcUpdate, RemoteControlReadyForOdometry, SetReferenceAttitude, RcModeManual >,
@@ -453,8 +454,8 @@ private:
 
   struct SetTakeoffCommands
   {
-    template<class FSM>
-    void operator()(const Takeoff& evt, FSM& fsm, RcTeleOp& src_state, PositionHold&)
+    template<class FSM, class SourceState>
+    void operator()(const Takeoff& evt, FSM& fsm, SourceState& src_state, PositionHold&)
     {
       constexpr double dt = 0.01;  // TODDO(acmarkus): FIX!!!!!!
       constexpr double seconds_to_ns = 1.0e9;
