@@ -26,6 +26,7 @@ namespace mav_control_interface {
 
 class Parameters {
  public:
+
   static constexpr double kDefaultStickDeadzone = 0.1;
   static constexpr double kDefaultRcTeleopMaxCarrotDistancePosition = 1.0;
   static constexpr double kDefaultRcTeleopMaxCarrotDistanceYaw = M_PI / 4.0;
@@ -33,6 +34,7 @@ class Parameters {
   static constexpr double kDefaultRcMaxYawRateCommand = 45.0 / 180.0 * M_PI;
   static constexpr double kDefaultTakeoffDistance = 1.0;
   static constexpr double kDefaultTakeoffTime = 5.0;
+  static constexpr AutopilotInterface kDefaultAutopilotInterface = AutopilotInterface::ASCTEC;
 
   Parameters()
       : stick_deadzone_(kDefaultStickDeadzone),

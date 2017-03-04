@@ -33,8 +33,10 @@ MavControlInterfaceImpl::MavControlInterfaceImpl(ros::NodeHandle& nh, ros::NodeH
                                                  std::shared_ptr<RcInterfaceBase> rc_interface)
     : nh_(nh),
       private_nh_(private_nh),
-      rc_interface_(rc_interface)
+      rc_interface_(rc_interface),
+      command_interface_(nh)
 {
+
   ros::NodeHandle interface_nh(private_nh, "control_interface");
 
   odometry_watchdog_ = nh_.createTimer(ros::Duration(kOdometryWatchdogTimeout),
@@ -80,6 +82,7 @@ MavControlInterfaceImpl::MavControlInterfaceImpl(ros::NodeHandle& nh, ros::NodeH
   interface_nh.param("takeoff_time", p.takeoff_time_, Parameters::kDefaultTakeoffTime);
 
   p.stick_deadzone_ = Deadzone<double>(rc_interface->getStickDeadzone());
+
   state_machine_->SetParameters(p);
 
   ROS_INFO_STREAM("Created control interface for controller " << controller->getName() <<

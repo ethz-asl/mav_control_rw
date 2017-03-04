@@ -200,8 +200,9 @@ private:
   bool use_rc_teleop_;
   std::string reference_frame_id_;
   std::shared_ptr<PositionControllerInterface> controller_;
-  ros::Publisher command_publisher_;
   ros::Publisher state_info_publisher_;
+
+  CommandInterface command_interface_;
 
   tf::TransformBroadcaster transform_broadcaster_;
   ros::Publisher current_reference_publisher_;
@@ -210,7 +211,7 @@ private:
   mav_msgs::EigenOdometry current_state_;
   mav_msgs::EigenTrajectoryPointDeque current_reference_queue_;
 
-  void PublishAttitudeCommand(const mav_msgs::EigenRollPitchYawrateThrust& command) const;
+  void PublishAttitudeCommand(const mav_msgs::EigenRollPitchYawrateThrust& command);
   void PublishStateInfo(const std::string& info);
   void PublishCurrentReference();
   void PublishPredictedState();

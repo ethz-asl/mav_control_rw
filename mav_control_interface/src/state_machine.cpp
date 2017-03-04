@@ -29,11 +29,10 @@ StateMachineDefinition::StateMachineDefinition(const ros::NodeHandle& nh, const 
                                                std::shared_ptr<PositionControllerInterface> controller)
     :nh_(nh),
      private_nh_(private_nh),
-     controller_(controller)
+     controller_(controller),
+     command_interface_(nh),
+     ready_to_publish_commands_(false)
 {
-  command_publisher_ = nh_.advertise<mav_msgs::RollPitchYawrateThrust>(
-      mav_msgs::default_topics::COMMAND_ROLL_PITCH_YAWRATE_THRUST, 1);
-
   current_reference_publisher_ = nh_.advertise<trajectory_msgs::MultiDOFJointTrajectory>(
       "command/current_reference", 1);
 
@@ -50,18 +49,9 @@ void StateMachineDefinition::SetParameters(const Parameters& parameters)
 }
 
 void StateMachineDefinition::PublishAttitudeCommand (
-    const mav_msgs::EigenRollPitchYawrateThrust& command) const
+    const mav_msgs::EigenRollPitchYawrateThrust& command)
 {
-  mav_msgs::RollPitchYawrateThrustPtr msg(new mav_msgs::RollPitchYawrateThrust);
-
-  mav_msgs::EigenRollPitchYawrateThrust tmp_command = command;
-  tmp_command.thrust.x() = 0;
-  tmp_command.thrust.y() = 0;
-  tmp_command.thrust.z() = std::max(0.0, command.thrust.z());
-
-  msg->header.stamp = ros::Time::now();  // TODO(acmarkus): get from msg
-  mav_msgs::msgRollPitchYawrateThrustFromEigen(command, msg.get());
-  command_publisher_.publish(msg);
+  command_interface_.publishCommand(command);
 }
 
 void StateMachineDefinition::PublishStateInfo(const std::string& info)

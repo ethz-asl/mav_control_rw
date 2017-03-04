@@ -162,8 +162,8 @@ int main(int argc, char** argv)
   std::shared_ptr<mav_control::LinearModelPredictiveControllerNode> mpc(
       new mav_control::LinearModelPredictiveControllerNode(nh, private_nh));
 
-  std::shared_ptr<mav_control_interface::RcInterfaceAci> rc(
-      new mav_control_interface::RcInterfaceAci(nh));
+  std::shared_ptr<mav_control_interface::RcInterfaceBase> rc;
+  AutopilotInterface::setupRCInterface(nh, &(rc.get()));
 
   mav_control_interface::MavControlInterface control_interface(nh, private_nh, mpc, rc);
 

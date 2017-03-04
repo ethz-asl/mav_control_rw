@@ -102,8 +102,6 @@ void NonLinearModelPredictiveControllerNode::ControllerDynConfigCallback(
 
 }
 
-
-
 bool NonLinearModelPredictiveControllerNode::setOdometry(const mav_msgs::EigenOdometry& odometry)
 {
   nonlinear_mpc_.setOdometry(odometry);
@@ -159,8 +157,8 @@ int main(int argc, char** argv)
   std::shared_ptr<mav_control::NonLinearModelPredictiveControllerNode> mpc(
       new mav_control::NonLinearModelPredictiveControllerNode(nh, private_nh));
 
-  std::shared_ptr<mav_control_interface::RcInterfaceAci> rc(
-      new mav_control_interface::RcInterfaceAci(nh));
+  std::shared_ptr<mav_control_interface::RcInterfaceBase> rc;
+  AutopilotInterface::setupRCInterface(nh, &(rc.get()));
 
   mav_control_interface::MavControlInterface control_interface(nh, private_nh, mpc, rc);
 
