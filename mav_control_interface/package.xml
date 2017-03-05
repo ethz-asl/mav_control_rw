@@ -8,6 +8,7 @@
   <license>TODO</license>
 
   <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>catkin_simple</buildtool_depend>
 
   <depend>cmake_modules</depend>
   <depend>roscpp</depend>
