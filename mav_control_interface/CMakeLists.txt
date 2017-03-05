@@ -5,6 +5,11 @@ find_package(catkin REQUIRED)
 find_package(catkin_simple REQUIRED)
 catkin_simple()
 
+find_package(mavros)
+if(mavros_FOUND)
+    add_definitions("-DUSING_MAVROS")
+endif()
+
 add_definitions(-std=c++11)
 
 find_package(Eigen REQUIRED)
@@ -17,8 +22,10 @@ set(SOURCE_FILES
   src/position_controller_interface.cpp
   src/rc_interface.cpp
   src/rc_interface_aci.cpp
+  src/rc_interface_mavros.cpp
   src/state_machine.cpp
   src/mpc_queue.cpp
+  src/autopilot_interface.cpp
 )
 
 cs_add_library(${PROJECT_NAME} ${SOURCE_FILES})

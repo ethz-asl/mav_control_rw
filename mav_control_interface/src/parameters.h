@@ -34,7 +34,6 @@ class Parameters {
   static constexpr double kDefaultRcMaxYawRateCommand = 45.0 / 180.0 * M_PI;
   static constexpr double kDefaultTakeoffDistance = 1.0;
   static constexpr double kDefaultTakeoffTime = 5.0;
-  static constexpr AutopilotInterface kDefaultAutopilotInterface = AutopilotInterface::ASCTEC;
 
   Parameters()
       : stick_deadzone_(kDefaultStickDeadzone),

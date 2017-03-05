@@ -33,8 +33,7 @@ MavControlInterfaceImpl::MavControlInterfaceImpl(ros::NodeHandle& nh, ros::NodeH
                                                  std::shared_ptr<RcInterfaceBase> rc_interface)
     : nh_(nh),
       private_nh_(private_nh),
-      rc_interface_(rc_interface),
-      command_interface_(nh)
+      rc_interface_(rc_interface)
 {
 
   ros::NodeHandle interface_nh(private_nh, "control_interface");

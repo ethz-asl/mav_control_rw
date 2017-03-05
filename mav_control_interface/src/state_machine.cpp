@@ -30,8 +30,7 @@ StateMachineDefinition::StateMachineDefinition(const ros::NodeHandle& nh, const 
     :nh_(nh),
      private_nh_(private_nh),
      controller_(controller),
-     command_interface_(nh),
-     ready_to_publish_commands_(false)
+     command_interface_(nh)
 {
   current_reference_publisher_ = nh_.advertise<trajectory_msgs::MultiDOFJointTrajectory>(
       "command/current_reference", 1);
