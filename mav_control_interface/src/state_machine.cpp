@@ -50,7 +50,12 @@ void StateMachineDefinition::SetParameters(const Parameters& parameters)
 void StateMachineDefinition::PublishAttitudeCommand (
     const mav_msgs::EigenRollPitchYawrateThrust& command)
 {
-  command_interface_.publishCommand(command);
+  //horrible hack to get predicted yaw
+  mav_msgs::EigenTrajectoryPointDeque predicted_state;
+  controller_->getPredictedState(&predicted_state);
+  double yaw = predicted_state.front().getYaw();
+
+  command_interface_.publishCommand(command, yaw);
 }
 
 void StateMachineDefinition::PublishStateInfo(const std::string& info)
