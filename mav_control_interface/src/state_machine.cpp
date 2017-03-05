@@ -51,9 +51,10 @@ void StateMachineDefinition::PublishAttitudeCommand (
     const mav_msgs::EigenRollPitchYawrateThrust& command)
 {
   //horrible hack to get predicted yaw
-  mav_msgs::EigenTrajectoryPointDeque predicted_state;
-  controller_->getPredictedState(&predicted_state);
-  double yaw = predicted_state.front().getYaw();
+
+  mav_msgs::EigenTrajectoryPoint ref_point;
+  controller_->getCurrentReference(&ref_point);
+  double yaw = ref_point.getYaw();
 
   command_interface_.publishCommand(command, yaw);
 }
