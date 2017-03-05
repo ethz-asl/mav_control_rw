@@ -48,15 +48,12 @@ void StateMachineDefinition::SetParameters(const Parameters& parameters)
 }
 
 void StateMachineDefinition::PublishAttitudeCommand (
-    const mav_msgs::EigenRollPitchYawrateThrust& command)
+    const mav_msgs::EigenRollPitchYawrateThrust& command, double yaw)
 {
-  //horrible hack to get predicted yaw
+  double thrust_min = controller_->getThrustMin();
+  double thrust_max = controller_->getThrustMax();
 
-  mav_msgs::EigenTrajectoryPoint ref_point;
-  controller_->getCurrentReference(&ref_point);
-  double yaw = ref_point.getYaw();
-
-  command_interface_.publishCommand(command, yaw);
+  command_interface_.publishCommand(command, yaw, thrust_min, thrust_max);
 }
 
 void StateMachineDefinition::PublishStateInfo(const std::string& info)

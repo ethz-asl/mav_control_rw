@@ -25,7 +25,8 @@ class BaseCommandPublisher {
   BaseCommandPublisher(const ros::NodeHandle& nh);
 
   virtual void publishCommand(
-      const mav_msgs::EigenRollPitchYawrateThrust& command, double yaw) = 0;
+      const mav_msgs::EigenRollPitchYawrateThrust& command, double yaw,
+      double thrust_min, double thrust_max) = 0;
 
  protected:
   ros::NodeHandle nh_;
@@ -35,8 +36,9 @@ class AscTecCommandPublisher : public BaseCommandPublisher {
  public:
   AscTecCommandPublisher(const ros::NodeHandle& nh);
 
-  virtual void publishCommand(
-      const mav_msgs::EigenRollPitchYawrateThrust& command, double yaw);
+  void publishCommand(
+      const mav_msgs::EigenRollPitchYawrateThrust& command, double yaw,
+      double thrust_min, double thrust_max);
 
  private:
   ros::Publisher attitude_and_thrust_command_publisher_;
@@ -46,8 +48,9 @@ class MavRosCommandPublisher : public BaseCommandPublisher {
  public:
   MavRosCommandPublisher(const ros::NodeHandle& nh);
 
-  virtual void publishCommand(
-      const mav_msgs::EigenRollPitchYawrateThrust& command, double yaw);
+  void publishCommand(
+      const mav_msgs::EigenRollPitchYawrateThrust& command, double yaw,
+      double thrust_min, double thrust_max);
 
  private:
   ros::Publisher attitude_command_publisher_;
@@ -58,8 +61,9 @@ class CommandInterface {
  public:
   CommandInterface(const ros::NodeHandle& nh);
 
-  virtual void publishCommand(
-      const mav_msgs::EigenRollPitchYawrateThrust& command, double yaw);
+  void publishCommand(
+      const mav_msgs::EigenRollPitchYawrateThrust& command, double yaw,
+      double thrust_min, double thrust_max);
 
  private:
   std::shared_ptr<BaseCommandPublisher> command_pub_ptr_;

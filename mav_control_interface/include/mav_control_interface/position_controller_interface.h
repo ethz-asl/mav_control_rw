@@ -35,6 +35,10 @@ class PositionControllerInterface {
 
   virtual double getMass() const = 0;
 
+  virtual double getThrustMin() const = 0;
+
+  virtual double getThrustMax() const = 0;
+
   virtual bool setReference(const mav_msgs::EigenTrajectoryPoint& reference) = 0;
 
   virtual bool setReferenceArray(const mav_msgs::EigenTrajectoryPointDeque& reference_array);

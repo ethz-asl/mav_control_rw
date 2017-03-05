@@ -61,9 +61,10 @@ CommandInterface::CommandInterface(const ros::NodeHandle& nh) {
 }
 
 void CommandInterface::publishCommand(
-    const mav_msgs::EigenRollPitchYawrateThrust& command, double yaw) {
+    const mav_msgs::EigenRollPitchYawrateThrust& command, double yaw,
+    double thrust_min, double thrust_max) {
   if (command_pub_ptr_ != nullptr) {
-    command_pub_ptr_->publishCommand(command, yaw);
+    command_pub_ptr_->publishCommand(command, yaw, thrust_min, thrust_max);
   } else {
     ROS_FATAL(
         "Autopilot interface, has not been set up, could not publish "
@@ -82,7 +83,8 @@ AscTecCommandPublisher::AscTecCommandPublisher(const ros::NodeHandle& nh)
 }
 
 void AscTecCommandPublisher::publishCommand(
-    const mav_msgs::EigenRollPitchYawrateThrust& command, double yaw) {
+    const mav_msgs::EigenRollPitchYawrateThrust& command, double yaw,
+    double thrust_min, double thrust_max) {
   mav_msgs::RollPitchYawrateThrustPtr msg(new mav_msgs::RollPitchYawrateThrust);
   mav_msgs::EigenRollPitchYawrateThrust tmp_command = command;
   tmp_command.thrust.x() = 0;
@@ -103,7 +105,8 @@ MavRosCommandPublisher::MavRosCommandPublisher(const ros::NodeHandle& nh)
 }
 
 void MavRosCommandPublisher::publishCommand(
-    const mav_msgs::EigenRollPitchYawrateThrust& command, double yaw) {
+    const mav_msgs::EigenRollPitchYawrateThrust& command, double yaw,
+    double thrust_min, double thrust_max) {
   geometry_msgs::PoseStamped attitude_msg;
   attitude_msg.header.stamp = ros::Time::now();
 
@@ -114,8 +117,9 @@ void MavRosCommandPublisher::publishCommand(
   attitude_command_publisher_.publish(attitude_msg);
 
   std_msgs::Float64 throttle_msg;
-  // throttle must be between 0 and 1
-  throttle_msg.data = std::min(1.0, std::max(0.0, command.thrust.z()));
+  // throttle must be between 0 and 1 (use min and max thrust to get there)
+  throttle_msg.data =
+      (command.thrust.z() - thrust_min) / (thrust_max - thrust_min);
   throttle_command_publisher_.publish(throttle_msg);
   return;
 }

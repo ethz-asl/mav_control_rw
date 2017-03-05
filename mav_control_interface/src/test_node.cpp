@@ -37,6 +37,14 @@ class DummyController : public PositionControllerInterface{
     return 1.0;
   }
 
+  virtual double getThrustMin() const {
+    return 0.0;
+  }
+
+  virtual double getThrustMax() const {
+    return 1.0;
+  }
+
   virtual bool setReference(const mav_msgs::EigenTrajectoryPoint& reference){
     ROS_INFO_STREAM("got reference: position=" << reference.position_W.transpose() << " yaw=" << reference.getYaw());
     reference_array_.clear();

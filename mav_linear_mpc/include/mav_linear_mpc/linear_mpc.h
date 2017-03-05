@@ -121,6 +121,16 @@ class LinearModelPredictiveController
     return mass_;
   }
 
+  double getThrustMin() const
+  {
+    return thrust_min_;
+  }
+
+  double getThrustMax() const
+  {
+    return thrust_max_;
+  }
+
   // get reference and predicted state
   bool getCurrentReference(mav_msgs::EigenTrajectoryPoint* reference) const;
   bool getCurrentReference(mav_msgs::EigenTrajectoryPointDeque* reference) const;
