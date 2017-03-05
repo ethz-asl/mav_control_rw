@@ -85,6 +85,14 @@ class NonLinearModelPredictiveControllerNode : public mav_control_interface::Pos
     return nonlinear_mpc_.getMass();
   }
 
+  virtual double getThrustMin() const {
+    return nonlinear_mpc_.getThrustMin();
+  }
+
+  virtual double getThrustMax() const {
+    return nonlinear_mpc_.getThrustMax();
+  }
+
   virtual bool setReference(const mav_msgs::EigenTrajectoryPoint& reference);
 
   virtual bool setReferenceArray(const mav_msgs::EigenTrajectoryPointDeque& reference_array);

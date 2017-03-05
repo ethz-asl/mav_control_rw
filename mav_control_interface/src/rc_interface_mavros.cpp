@@ -44,15 +44,20 @@ RcInterfaceMavRos::RcInterfaceMavRos(const ros::NodeHandle& nh)
       //change to range of -1 to 1
       float norm_value = (static_cast<float>(i)-STICK_MIN) / (STICK_MAX-STICK_MIN);
       norm_value = 2*norm_value - 1;
+      if(norm_value > 1){
+        norm_value = 1;
+      }else if(norm_value < -1){
+        norm_value = -1;
+      }
 
       rc_data.push_back(norm_value);
     }
 
     if (is_on_) {
-      last_data_.right_up_down = rc_data[0];
-      last_data_.right_side = -rc_data[0];
+      last_data_.right_up_down = rc_data[2];
+      last_data_.right_side = -rc_data[1];
       last_data_.left_up_down = rc_data[0];
-      last_data_.left_side = -rc_data[0];
+      last_data_.left_side = -rc_data[3];
 
       if (rc_data[6] > 0.5)
         last_data_.control_interface = RcData::ControlInterface::ON;

@@ -30,9 +30,9 @@ AutopilotInterface::Types AutopilotInterface::getInterfaceType(
 }
 
 void AutopilotInterface::setupRCInterface(
-    const ros::NodeHandle& nh,
+    const ros::NodeHandle& nh, const ros::NodeHandle& private_nh,
     std::shared_ptr<mav_control_interface::RcInterfaceBase>* rc_interface_ptr) {
-  Types autopilot_type = getInterfaceType(nh);
+  Types autopilot_type = getInterfaceType(private_nh);
 
   if (autopilot_type == AutopilotInterface::Types::ASCTEC) {
     *rc_interface_ptr =
@@ -43,9 +43,10 @@ void AutopilotInterface::setupRCInterface(
   }
 }
 
-CommandInterface::CommandInterface(const ros::NodeHandle& nh) {
+CommandInterface::CommandInterface(const ros::NodeHandle& nh,
+                                   const ros::NodeHandle& private_nh) {
   AutopilotInterface::Types autopilot_type =
-      AutopilotInterface::getInterfaceType(nh);
+      AutopilotInterface::getInterfaceType(private_nh);
 
   if (autopilot_type == AutopilotInterface::Types::ASCTEC) {
     command_pub_ptr_ = std::make_shared<AscTecCommandPublisher>(nh);

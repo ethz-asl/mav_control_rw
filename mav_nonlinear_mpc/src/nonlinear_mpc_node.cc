@@ -31,6 +31,7 @@
 #include <ros/ros.h>
 #include <mav_msgs/default_topics.h>
 #include <mav_nonlinear_mpc/nonlinear_mpc_node.h>
+#include <mav_control_interface/autopilot_interface.h>
 #include <mav_control_interface/mav_control_interface.h>
 #include <mav_control_interface/rc_interface_aci.h>
 
@@ -158,7 +159,7 @@ int main(int argc, char** argv)
       new mav_control::NonLinearModelPredictiveControllerNode(nh, private_nh));
 
   std::shared_ptr<mav_control_interface::RcInterfaceBase> rc;
-  AutopilotInterface::setupRCInterface(nh, &(rc.get()));
+  AutopilotInterface::setupRCInterface(nh, private_nh, &rc);
 
   mav_control_interface::MavControlInterface control_interface(nh, private_nh, mpc, rc);
 

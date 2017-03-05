@@ -60,6 +60,14 @@ class LinearModelPredictiveControllerNode: public mav_control_interface::Positio
     return linear_mpc_.getMass();
   }
 
+  virtual double getThrustMin() const {
+    return linear_mpc_.getThrustMin();
+  }
+
+  virtual double getThrustMax() const {
+    return linear_mpc_.getThrustMax();
+  }
+
   virtual bool setReference(const mav_msgs::EigenTrajectoryPoint& reference);
 
   virtual bool setReferenceArray(const mav_msgs::EigenTrajectoryPointDeque& reference_array);

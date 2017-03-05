@@ -15,7 +15,7 @@ struct AutopilotInterface {
   static Types getInterfaceType(const ros::NodeHandle& nh_in);
 
   static void setupRCInterface(
-      const ros::NodeHandle& nh,
+      const ros::NodeHandle& nh, const ros::NodeHandle& private_nh,
       std::shared_ptr<mav_control_interface::RcInterfaceBase>*
           rc_interface_ptr);
 };
@@ -36,9 +36,8 @@ class AscTecCommandPublisher : public BaseCommandPublisher {
  public:
   AscTecCommandPublisher(const ros::NodeHandle& nh);
 
-  void publishCommand(
-      const mav_msgs::EigenRollPitchYawrateThrust& command, double yaw,
-      double thrust_min, double thrust_max);
+  void publishCommand(const mav_msgs::EigenRollPitchYawrateThrust& command,
+                      double yaw, double thrust_min, double thrust_max);
 
  private:
   ros::Publisher attitude_and_thrust_command_publisher_;
@@ -48,9 +47,8 @@ class MavRosCommandPublisher : public BaseCommandPublisher {
  public:
   MavRosCommandPublisher(const ros::NodeHandle& nh);
 
-  void publishCommand(
-      const mav_msgs::EigenRollPitchYawrateThrust& command, double yaw,
-      double thrust_min, double thrust_max);
+  void publishCommand(const mav_msgs::EigenRollPitchYawrateThrust& command,
+                      double yaw, double thrust_min, double thrust_max);
 
  private:
   ros::Publisher attitude_command_publisher_;
@@ -59,11 +57,10 @@ class MavRosCommandPublisher : public BaseCommandPublisher {
 
 class CommandInterface {
  public:
-  CommandInterface(const ros::NodeHandle& nh);
+  CommandInterface(const ros::NodeHandle& nh, const ros::NodeHandle& private_nh);
 
-  void publishCommand(
-      const mav_msgs::EigenRollPitchYawrateThrust& command, double yaw,
-      double thrust_min, double thrust_max);
+  void publishCommand(const mav_msgs::EigenRollPitchYawrateThrust& command,
+                      double yaw, double thrust_min, double thrust_max);
 
  private:
   std::shared_ptr<BaseCommandPublisher> command_pub_ptr_;
