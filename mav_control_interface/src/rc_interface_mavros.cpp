@@ -54,7 +54,7 @@ RcInterfaceMavRos::RcInterfaceMavRos(const ros::NodeHandle& nh)
       last_data_.left_up_down = rc_data[0];
       last_data_.left_side = -rc_data[0];
 
-      if (rc_data[5] > 0.0)
+      if (rc_data[6] > 0.5)
         last_data_.control_interface = RcData::ControlInterface::ON;
       else
         last_data_.control_interface = RcData::ControlInterface::OFF;
@@ -66,7 +66,7 @@ RcInterfaceMavRos::RcInterfaceMavRos(const ros::NodeHandle& nh)
       else
         last_data_.control_mode = RcData::ControlMode::POSITION_CONTROL;
 
-      last_data_.wheel = rc_data[6];
+      last_data_.wheel = 0.0;
     }
     else {  //set to zero if RC is off
       ROS_WARN_STREAM_THROTTLE(5.0, "Detected RC Off.");
