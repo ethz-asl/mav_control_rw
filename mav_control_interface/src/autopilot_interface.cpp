@@ -121,6 +121,7 @@ void MavRosCommandPublisher::publishCommand(
   // throttle must be between 0 and 1 (use min and max thrust to get there)
   throttle_msg.data =
       (command.thrust.z() - thrust_min) / (thrust_max - thrust_min);
+  throttle_msg.data = std::min(1.0, std::max(0.0, throttle_msg.data));
   throttle_command_publisher_.publish(throttle_msg);
   return;
 }

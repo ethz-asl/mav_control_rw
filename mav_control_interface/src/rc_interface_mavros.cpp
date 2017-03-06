@@ -59,23 +59,26 @@ RcInterfaceMavRos::RcInterfaceMavRos(const ros::NodeHandle& nh)
       last_data_.left_up_down = rc_data[0];
       last_data_.left_side = -rc_data[3];
 
-      if (rc_data[6] > 0.5)
+      if (rc_data[6] > 0.5){
         ROS_INFO("data on");
         last_data_.control_interface = RcData::ControlInterface::ON;
-      else
+      }
+      else{
         ROS_INFO("data off");
         last_data_.control_interface = RcData::ControlInterface::OFF;
-
-      if (rc_data[4] <= -0.5)
+      }
+      if (rc_data[4] <= -0.5){
         ROS_INFO("manual");
         last_data_.control_mode = RcData::ControlMode::MANUAL;
-      else if (rc_data[4] > -0.5 && rc_data[4] < 0.5)
+      }
+      else if (rc_data[4] > -0.5 && rc_data[4] < 0.5){
         ROS_INFO("altitude");
         last_data_.control_mode = RcData::ControlMode::ALTITUDE_CONTROL;
-      else
+      }
+      else{
         ROS_INFO("position");
         last_data_.control_mode = RcData::ControlMode::POSITION_CONTROL;
-
+      }
       last_data_.wheel = 0.0;
     }
     else {  //set to zero if RC is off
