@@ -64,6 +64,7 @@ CommandInterface::CommandInterface(const ros::NodeHandle& nh,
 void CommandInterface::publishCommand(
     const mav_msgs::EigenRollPitchYawrateThrust& command, double yaw,
     double thrust_min, double thrust_max) {
+  ROS_INFO_STREAM("Command: " << command.roll << " " << command.pitch << " " << yaw);
   if (command_pub_ptr_ != nullptr) {
     command_pub_ptr_->publishCommand(command, yaw, thrust_min, thrust_max);
   } else {
