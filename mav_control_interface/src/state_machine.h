@@ -346,6 +346,7 @@ private:
       mav_msgs::EigenRollPitchYawrateThrust command;
       fsm.controller_->calculateRollPitchYawrateThrustCommand(&command);
       fsm.PublishAttitudeCommand(command, yaw);
+      ROS_INFO("Pub ref");
       fsm.PublishCurrentReference();
       fsm.PublishPredictedState();
     }
