@@ -339,7 +339,6 @@ private:
     template<class EVT, class FSM, class SourceState, class TargetState>
     void operator()(EVT const& evt, FSM& fsm, SourceState&, TargetState&)
     {
-      ROS_INFO("running");
       mav_msgs::EigenTrajectoryPoint ref_point;
       fsm.controller_->getCurrentReference(&ref_point);
       double yaw = ref_point.getYaw();
@@ -347,7 +346,6 @@ private:
       mav_msgs::EigenRollPitchYawrateThrust command;
       fsm.controller_->calculateRollPitchYawrateThrustCommand(&command);
       fsm.PublishAttitudeCommand(command, yaw);
-      ROS_INFO("Pub ref");
       fsm.PublishCurrentReference();
       fsm.PublishPredictedState();
     }
