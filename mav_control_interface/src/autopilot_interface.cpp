@@ -1,4 +1,6 @@
 #include <tf/transform_datatypes.h>
+#include <eigen_conversions/eigen_msg.h>
+#include <mav_msgs/conversions.h>
 
 #include "mav_control_interface/autopilot_interface.h"
 
@@ -104,6 +106,16 @@ MavRosCommandPublisher::MavRosCommandPublisher(const ros::NodeHandle& nh)
       "mavros/setpoint_attitude/attitude", 1);
   throttle_command_publisher_ = nh_.advertise<std_msgs::Float64>(
       "mavros/setpoint_attitude/att_throttle", 1);
+  //not actually just imu, mavros fills in orientation from fcu
+  orientation_subscriber_ = nh_.subscribe("mavros/imu/data", 10,
+                        &MavRosCommandPublisher::orientationCallback, this);
+}
+
+void MavRosCommandPublisher::orientationCallback(const sensor_msgs::ImuConstPtr& msg){
+
+  Eigen::Quaterniond orientation;
+  tf::quaternionMsgToEigen(msg->orientation, orientation);
+  internal_yaw_ = mav_msgs::yawFromQuaternion(orientation);
 }
 
 void MavRosCommandPublisher::publishCommand(
@@ -114,8 +126,9 @@ void MavRosCommandPublisher::publishCommand(
 
   // we need yaw not yaw rate so for now I just grab the predicted yaw
   // TODO find less horrible hack
+  //Negitives to suit weird ass pixhawk frames
   attitude_msg.pose.orientation =
-      tf::createQuaternionMsgFromRollPitchYaw(command.roll, command.pitch, yaw);
+      tf::createQuaternionMsgFromRollPitchYaw(-command.roll, -command.pitch, internal_yaw_ + 0.3*command.yaw_rate);
   attitude_command_publisher_.publish(attitude_msg);
 
   std_msgs::Float64 throttle_msg;
