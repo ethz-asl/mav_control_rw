@@ -9,6 +9,8 @@
 
 const std::string AutopilotInterface::kDefaultAutopilotInterface = "asctec";
 
+const double MavRosCommandPublisher::kDefaultYawGain = 1.0;
+
 AutopilotInterface::Types AutopilotInterface::getInterfaceType(
     const ros::NodeHandle& nh_in) {
   ros::NodeHandle nh = nh_in;
@@ -51,10 +53,10 @@ CommandInterface::CommandInterface(const ros::NodeHandle& nh,
       AutopilotInterface::getInterfaceType(private_nh);
 
   if (autopilot_type == AutopilotInterface::Types::ASCTEC) {
-    command_pub_ptr_ = std::make_shared<AscTecCommandPublisher>(nh);
+    command_pub_ptr_ = std::make_shared<AscTecCommandPublisher>(nh, private_nh);
   } else if (autopilot_type == AutopilotInterface::Types::MAVROS) {
 #ifdef USING_MAVROS
-    command_pub_ptr_ = std::make_shared<MavRosCommandPublisher>(nh);
+    command_pub_ptr_ = std::make_shared<MavRosCommandPublisher>(nh, private_nh);
 #else
     ROS_FATAL(
         "THIS NODE HAS BEEN COMPILED WITHOUT MAVROS, CANNOT USE MAVROS "
@@ -64,31 +66,32 @@ CommandInterface::CommandInterface(const ros::NodeHandle& nh,
 }
 
 void CommandInterface::publishCommand(
-    const mav_msgs::EigenRollPitchYawrateThrust& command, double yaw,
-    double thrust_min, double thrust_max) {
-  ROS_INFO_STREAM("Command: " << command.roll << " " << command.pitch << " " << yaw);
+    const mav_msgs::EigenRollPitchYawrateThrust& command, double thrust_min,
+    double thrust_max) {
   if (command_pub_ptr_ != nullptr) {
-    command_pub_ptr_->publishCommand(command, yaw, thrust_min, thrust_max);
+    command_pub_ptr_->publishCommand(command, thrust_min, thrust_max);
   } else {
     ROS_FATAL(
-        "Autopilot interface, has not been set up, could not publish "
+        "Autopilot interface has not been set up, could not publish "
         "command");
   }
 }
 
-BaseCommandPublisher::BaseCommandPublisher(const ros::NodeHandle& nh)
-    : nh_(nh) {}
+BaseCommandPublisher::BaseCommandPublisher(const ros::NodeHandle& nh,
+                                           const ros::NodeHandle& private_nh)
+    : nh_(nh), private_nh_(private_nh) {}
 
-AscTecCommandPublisher::AscTecCommandPublisher(const ros::NodeHandle& nh)
-    : BaseCommandPublisher(nh) {
+AscTecCommandPublisher::AscTecCommandPublisher(
+    const ros::NodeHandle& nh, const ros::NodeHandle& private_nh)
+    : BaseCommandPublisher(nh, private_nh) {
   attitude_and_thrust_command_publisher_ =
       nh_.advertise<mav_msgs::RollPitchYawrateThrust>(
           mav_msgs::default_topics::COMMAND_ROLL_PITCH_YAWRATE_THRUST, 1);
 }
 
 void AscTecCommandPublisher::publishCommand(
-    const mav_msgs::EigenRollPitchYawrateThrust& command, double yaw,
-    double thrust_min, double thrust_max) {
+    const mav_msgs::EigenRollPitchYawrateThrust& command, double thrust_min,
+    double thrust_max) {
   mav_msgs::RollPitchYawrateThrustPtr msg(new mav_msgs::RollPitchYawrateThrust);
   mav_msgs::EigenRollPitchYawrateThrust tmp_command = command;
   tmp_command.thrust.x() = 0;
@@ -100,35 +103,42 @@ void AscTecCommandPublisher::publishCommand(
   attitude_and_thrust_command_publisher_.publish(msg);
 }
 
-MavRosCommandPublisher::MavRosCommandPublisher(const ros::NodeHandle& nh)
-    : BaseCommandPublisher(nh) {
+MavRosCommandPublisher::MavRosCommandPublisher(
+    const ros::NodeHandle& nh, const ros::NodeHandle& private_nh)
+    : BaseCommandPublisher(nh, private_nh) {
   attitude_command_publisher_ = nh_.advertise<geometry_msgs::PoseStamped>(
       "mavros/setpoint_attitude/attitude", 1);
   throttle_command_publisher_ = nh_.advertise<std_msgs::Float64>(
       "mavros/setpoint_attitude/att_throttle", 1);
-  //not actually just imu, mavros fills in orientation from fcu
-  orientation_subscriber_ = nh_.subscribe("mavros/imu/data", 10,
-                        &MavRosCommandPublisher::orientationCallback, this);
+
+  // not actually just imu, mavros fills in orientation from fcu
+  orientation_subscriber_ =
+      nh_.subscribe("mavros/imu/data", 10,
+                    &MavRosCommandPublisher::orientationCallback, this);
+
+  private_nh_.param("yaw_gain", yaw_gain_, kDefaultYawGain);
 }
 
-void MavRosCommandPublisher::orientationCallback(const sensor_msgs::ImuConstPtr& msg){
-
+void MavRosCommandPublisher::orientationCallback(
+    const sensor_msgs::ImuConstPtr& msg) {
   Eigen::Quaterniond orientation;
   tf::quaternionMsgToEigen(msg->orientation, orientation);
   internal_yaw_ = mav_msgs::yawFromQuaternion(orientation);
 }
 
 void MavRosCommandPublisher::publishCommand(
-    const mav_msgs::EigenRollPitchYawrateThrust& command, double yaw,
-    double thrust_min, double thrust_max) {
+    const mav_msgs::EigenRollPitchYawrateThrust& command, double thrust_min,
+    double thrust_max) {
   geometry_msgs::PoseStamped attitude_msg;
   attitude_msg.header.stamp = ros::Time::now();
 
-  // we need yaw not yaw rate so for now I just grab the predicted yaw
-  // TODO find less horrible hack
-  //Negitives to suit weird ass pixhawk frames
-  attitude_msg.pose.orientation =
-      tf::createQuaternionMsgFromRollPitchYaw(-command.roll, -command.pitch, internal_yaw_ + 0.3*command.yaw_rate);
+  // Two horrible hacks here,
+  // 1) negitives to suit weird ass pixhawk frames
+  // 2) fudging a yaw setpoint from the commanded rate
+  // A better solution is needed for both, but this will get us flying
+  attitude_msg.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(
+      -command.roll, -command.pitch,
+      internal_yaw_ + yaw_gain_ * command.yaw_rate);
   attitude_command_publisher_.publish(attitude_msg);
 
   std_msgs::Float64 throttle_msg;
