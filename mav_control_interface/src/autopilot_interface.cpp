@@ -147,7 +147,7 @@ void MavRosCommandPublisher::publishCommand(
         command.roll, command.pitch,
         internal_yaw_ + yaw_gain_ * command.yaw_rate);
       }
-  std::err << "roll: " << command.roll << "pitch: " << command.pitch << std::endl;
+  std::cerr << "roll: " << command.roll << "pitch: " << command.pitch << std::endl;
   attitude_command_publisher_.publish(attitude_msg);
 
   std_msgs::Float64 throttle_msg;
