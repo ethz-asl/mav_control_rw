@@ -137,7 +137,7 @@ void MavRosCommandPublisher::publishCommand(
   // 2) fudging a yaw setpoint from the commanded rate
   // A better solution is needed for both, but this will get us flying
   attitude_msg.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(
-      -command.roll, -command.pitch,
+      command.roll, command.pitch,
       internal_yaw_ + yaw_gain_ * command.yaw_rate);
   attitude_command_publisher_.publish(attitude_msg);
 

@@ -55,9 +55,9 @@ RcInterfaceMavRos::RcInterfaceMavRos(const ros::NodeHandle& nh)
 
     if (is_on_) {
       last_data_.right_up_down = rc_data[2];
-      last_data_.right_side = -rc_data[1];
+      last_data_.right_side = rc_data[1];
       last_data_.left_up_down = rc_data[0];
-      last_data_.left_side = -rc_data[3];
+      last_data_.left_side = rc_data[3];
 
       if (rc_data[6] > 0.5){
         last_data_.control_interface = RcData::ControlInterface::ON;
