@@ -212,7 +212,7 @@ private:
   mav_msgs::EigenOdometry current_state_;
   mav_msgs::EigenTrajectoryPointDeque current_reference_queue_;
 
-  void PublishAttitudeCommand(const mav_msgs::EigenRollPitchYawrateThrust& command);
+  void PublishAttitudeCommand(const mav_msgs::EigenRollPitchYawrateThrust& command, bool from_rc);
   void PublishStateInfo(const std::string& info);
   void PublishCurrentReference();
   void PublishPredictedState();
@@ -287,7 +287,9 @@ private:
 
       constexpr double thrust_below_hovering_factor = 0.8;
       command.thrust.z() = (evt.rc_data.left_up_down + 1.0) * fsm.controller_->getMass() * 9.81 * thrust_below_hovering_factor;
-      fsm.PublishAttitudeCommand(command);
+
+
+      fsm.PublishAttitudeCommand(command, true);
     }
   };
 
@@ -339,7 +341,7 @@ private:
 
       mav_msgs::EigenRollPitchYawrateThrust command;
       fsm.controller_->calculateRollPitchYawrateThrustCommand(&command);
-      fsm.PublishAttitudeCommand(command);
+      fsm.PublishAttitudeCommand(command, false);
       fsm.PublishCurrentReference();
       fsm.PublishPredictedState();
     }

@@ -48,12 +48,12 @@ void StateMachineDefinition::SetParameters(const Parameters& parameters)
 }
 
 void StateMachineDefinition::PublishAttitudeCommand (
-    const mav_msgs::EigenRollPitchYawrateThrust& command)
+    const mav_msgs::EigenRollPitchYawrateThrust& command, bool from_rc)
 {
   double thrust_min = controller_->getThrustMin();
   double thrust_max = controller_->getThrustMax();
 
-  command_interface_.publishCommand(command, thrust_min, thrust_max);
+  command_interface_.publishCommand(command, thrust_min, thrust_max, from_rc);
 }
 
 void StateMachineDefinition::PublishStateInfo(const std::string& info)
