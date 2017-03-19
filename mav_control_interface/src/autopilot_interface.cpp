@@ -139,12 +139,12 @@ void MavRosCommandPublisher::publishCommand(
   // A better solution is needed for both, but this will get us flying
   if(from_rc){
     attitude_msg.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(
-        -command.roll, -command.pitch,
+        command.roll, command.pitch,
         internal_yaw_ + yaw_gain_ * command.yaw_rate);
   }
   else{
         attitude_msg.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(
-        command.roll, command.pitch,
+        -command.roll, -command.pitch,
         internal_yaw_ + yaw_gain_ * command.yaw_rate);
       }
   attitude_command_publisher_.publish(attitude_msg);
