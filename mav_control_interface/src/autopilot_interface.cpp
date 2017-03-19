@@ -144,7 +144,7 @@ void MavRosCommandPublisher::publishCommand(
   }
   else{
         attitude_msg.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(
-        0.1, 0,
+        0.0, 0.1,
         internal_yaw_ + yaw_gain_ * command.yaw_rate);
       }
   attitude_command_publisher_.publish(attitude_msg);
