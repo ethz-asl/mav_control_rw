@@ -289,7 +289,7 @@ private:
       command.thrust.z() = (evt.rc_data.left_up_down + 1.0) * fsm.controller_->getMass() * 9.81 * thrust_below_hovering_factor;
 
 
-      fsm.PublishAttitudeCommand(command, true);
+      fsm.PublishAttitudeCommand(command);
     }
   };
 
@@ -341,7 +341,7 @@ private:
 
       mav_msgs::EigenRollPitchYawrateThrust command;
       fsm.controller_->calculateRollPitchYawrateThrustCommand(&command);
-      fsm.PublishAttitudeCommand(command, false);
+      fsm.PublishAttitudeCommand(command);
       fsm.PublishCurrentReference();
       fsm.PublishPredictedState();
     }
