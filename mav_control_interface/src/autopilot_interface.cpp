@@ -67,9 +67,9 @@ CommandInterface::CommandInterface(const ros::NodeHandle& nh,
 
 void CommandInterface::publishCommand(
     const mav_msgs::EigenRollPitchYawrateThrust& command, double thrust_min,
-    double thrust_max, bool from_rc) {
+    double thrust_max) {
   if (command_pub_ptr_ != nullptr) {
-    command_pub_ptr_->publishCommand(command, thrust_min, thrust_max, from_rc);
+    command_pub_ptr_->publishCommand(command, thrust_min, thrust_max);
   } else {
     ROS_FATAL(
         "Autopilot interface has not been set up, could not publish "
@@ -91,7 +91,7 @@ AscTecCommandPublisher::AscTecCommandPublisher(
 
 void AscTecCommandPublisher::publishCommand(
     const mav_msgs::EigenRollPitchYawrateThrust& command, double thrust_min,
-    double thrust_max, bool from_rc) {
+    double thrust_max) {
   mav_msgs::RollPitchYawrateThrustPtr msg(new mav_msgs::RollPitchYawrateThrust);
   mav_msgs::EigenRollPitchYawrateThrust tmp_command = command;
   tmp_command.thrust.x() = 0;
@@ -128,26 +128,15 @@ void MavRosCommandPublisher::orientationCallback(
 
 void MavRosCommandPublisher::publishCommand(
     const mav_msgs::EigenRollPitchYawrateThrust& command, double thrust_min,
-    double thrust_max, bool from_rc) {
+    double thrust_max) {
   geometry_msgs::PoseStamped attitude_msg;
   attitude_msg.header.stamp = ros::Time::now();
 
-  // Two horrible hacks here,
-  // 1) negitives to suit weird ass pixhawk frames
-  // 2) fudging a yaw setpoint from the commanded rate
-  // 3) if invesion is needed seems to depend on where the command comes from??? WTF
-  // A better solution is needed for both, but this will get us flying
-  if(from_rc){
-    attitude_msg.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(
-        command.roll, command.pitch,
-        internal_yaw_ + yaw_gain_ * command.yaw_rate);
-  }
-  else{
-        attitude_msg.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(
-        command.roll, command.pitch,
-        internal_yaw_ + yaw_gain_ * command.yaw_rate);
-      }
-  std::cerr << "roll: " << command.roll << "pitch: " << command.pitch << std::endl;
+  // Horrible hacks here, fudging a yaw setpoint from the commanded rate
+  // A better solution is needed, but this will get us flying
+  attitude_msg.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(
+      command.roll, command.pitch,
+      internal_yaw_ + yaw_gain_ * command.yaw_rate);
   attitude_command_publisher_.publish(attitude_msg);
 
   std_msgs::Float64 throttle_msg;

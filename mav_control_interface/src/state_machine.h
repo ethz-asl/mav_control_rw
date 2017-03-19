@@ -212,7 +212,7 @@ private:
   mav_msgs::EigenOdometry current_state_;
   mav_msgs::EigenTrajectoryPointDeque current_reference_queue_;
 
-  void PublishAttitudeCommand(const mav_msgs::EigenRollPitchYawrateThrust& command, bool from_rc);
+  void PublishAttitudeCommand(const mav_msgs::EigenRollPitchYawrateThrust& command);
   void PublishStateInfo(const std::string& info);
   void PublishCurrentReference();
   void PublishPredictedState();
