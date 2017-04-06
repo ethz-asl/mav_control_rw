@@ -20,7 +20,7 @@ If you use any of these controllers within your research, please cite one of the
                 author      = "Mina Kamel and Thomas Stastny and Kostas Alexis and Roland Siegwart",
                 title       = "Model Predictive Control for Trajectory Tracking of Unmanned Aerial Vehicles Using Robot Operating System",
                 editor      = "Anis Koubaa",
-                booktitle   = "Robot Operating System (ROS) The Complete Reference",
+                booktitle   = "Robot Operating System (ROS) The Complete Reference, Volume 2",
                 publisher   = "Springer",
                 year = “2017”,
                 note  = "(to appear)",
