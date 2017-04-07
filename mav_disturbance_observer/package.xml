@@ -22,5 +22,4 @@
   <depend>cmake_modules</depend>
   <depend>tf</depend>
   <depend>message_generation</depend>
-  <depend>eigen_catkin</depend>
 </package>
