@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>mav_control_interface</name>
-  <version>0.0.0</version>
+  <version>1.0.0</version>
   <description>This package provedes libraries to interface mav controllers</description>
 
   <maintainer email="markus.achtelik_devel@mavt.ethz.ch">Markus Achtelik</maintainer>
