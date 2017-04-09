@@ -18,9 +18,34 @@ else (Openblas_FOUND)
   set(lapacke_LIBRARIES lapacke)
 endif (Openblas_FOUND)
 
+find_package(catkin REQUIRED COMPONENTS
+	cmake_modules
+	roscpp
+	mav_msgs
+	dynamic_reconfigure
+	tf
+	mav_control_interface
+	mav_disturbance_observer
+)
 
-find_package(catkin_simple REQUIRED)
-catkin_simple(ALL_DEPS_REQUIRED)
+find_package(Eigen REQUIRED)
+
+generate_dynamic_reconfigure_options(
+  cfg/NonLinearMPC.cfg
+  )
+
+catkin_package(
+	INCLUDE_DIRS include ${Eigen_INCLUDE_DIRS}
+	LIBRARIES mav_nonlinear_mpc
+	CATKIN_DEPENDS cmake_modules roscpp mav_msgs dynamic_reconfigure tf mav_control_interface mav_disturbance_observer
+	DEPENDS Eigen
+)
+
+include_directories(
+  include
+  ${catkin_INCLUDE_DIRS}
+  ${Eigen_INCLUDE_DIRS}
+)
 
 if(APPLE)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++")
@@ -28,13 +53,14 @@ else()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 endif()
 
-find_package(Eigen REQUIRED)
-include_directories(${Eigen_INCLUDE_DIRS})
+
+
+
 
 #############
 # LIBRARIES #
 #############
-cs_add_library(mav_nonlinear_mpc_lib
+add_library(mav_nonlinear_mpc
   src/nonlinear_mpc.cc
   solver/qpoases/SRC/Bounds.cpp
   solver/qpoases/SRC/Constraints.cpp
@@ -50,31 +76,41 @@ cs_add_library(mav_nonlinear_mpc_lib
   solver/acado_integrator.c
   solver/acado_solver.c
   solver/acado_auxiliary_functions.c
-  )
+)
 
-target_include_directories(mav_nonlinear_mpc_lib PUBLIC
+target_include_directories(mav_nonlinear_mpc PUBLIC
 	solver/
 	solver/qpoases
 	solver/qpoases/INCLUDE
 	solver/qpoases/SRC
-	)
+)
+
+target_link_libraries(mav_nonlinear_mpc ${lapacke_LIBRARIES} ${catkin_LIBRARIES})
+add_dependencies(mav_nonlinear_mpc ${catkin_EXPORTED_TARGETS})
 
 ############
 # BINARIES #
 ############
-cs_add_executable(nonlinear_mpc_node
-  src/nonlinear_mpc_node.cc
-)
-
-target_link_libraries(mav_nonlinear_mpc_lib ${lapacke_LIBRARIES})
-
-target_link_libraries(nonlinear_mpc_node mav_nonlinear_mpc_lib)
-
-add_dependencies(nonlinear_mpc_node ${${PROJECT_NAME}_EXPORTED_TARGETS})
-
+add_executable(nonlinear_mpc_node src/nonlinear_mpc_node.cc)
+target_link_libraries(nonlinear_mpc_node mav_nonlinear_mpc ${catkin_LIBRARIES})
+add_dependencies(nonlinear_mpc_node ${catkin_EXPORTED_TARGETS})
+add_dependencies(nonlinear_mpc_node ${PROJECT_NAME}_gencfg)
 
 ##########
 # EXPORT #
 ##########
-cs_install()
-cs_export()
+install(TARGETS mav_nonlinear_mpc
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+)
+
+install(TARGETS nonlinear_mpc_node
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+install(
+  DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  FILES_MATCHING PATTERN "*.h"
+)
