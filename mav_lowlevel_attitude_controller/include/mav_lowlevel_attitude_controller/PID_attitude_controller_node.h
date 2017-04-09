@@ -54,9 +54,9 @@ class PIDAttitudeControllerNode
       const mav_msgs::RollPitchYawrateThrustConstPtr& roll_pitch_yawrate_thrust_reference);
   void OdometryCallback(const nav_msgs::OdometryConstPtr& odometry_msg);
 
-  void DynConfigCallback(mav_linear_mpc::PIDAttitudeConfig &config, uint32_t level);
+  void DynConfigCallback(mav_lowlevel_attitude_controller::PIDAttitudeConfig &config, uint32_t level);
 
-  dynamic_reconfigure::Server<mav_linear_mpc::PIDAttitudeConfig> dyn_config_server_;
+  dynamic_reconfigure::Server<mav_lowlevel_attitude_controller::PIDAttitudeConfig> dyn_config_server_;
 
 };
 

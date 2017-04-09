@@ -40,7 +40,7 @@ PIDAttitudeControllerNode::PIDAttitudeControllerNode(const ros::NodeHandle& nh,
   motor_velocity_reference_pub_ = nh_.advertise<mav_msgs::Actuators>(
       mav_msgs::default_topics::COMMAND_ACTUATORS, 1);
 
-  dynamic_reconfigure::Server<mav_linear_mpc::PIDAttitudeConfig>::CallbackType f;
+  dynamic_reconfigure::Server<mav_lowlevel_attitude_controller::PIDAttitudeConfig>::CallbackType f;
   f = boost::bind(&PIDAttitudeControllerNode::DynConfigCallback, this, _1, _2);
   dyn_config_server_.setCallback(f);
 }
@@ -85,7 +85,7 @@ void PIDAttitudeControllerNode::OdometryCallback(const nav_msgs::OdometryConstPt
   motor_velocity_reference_pub_.publish(turning_velocities_msg);
 }
 
-void PIDAttitudeControllerNode::DynConfigCallback(mav_linear_mpc::PIDAttitudeConfig &config,
+void PIDAttitudeControllerNode::DynConfigCallback(mav_lowlevel_attitude_controller::PIDAttitudeConfig &config,
                                                   uint32_t level)
 {
 
