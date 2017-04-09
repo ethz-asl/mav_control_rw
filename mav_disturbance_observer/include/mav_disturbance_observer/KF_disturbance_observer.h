@@ -52,6 +52,7 @@ class KFDisturbanceObserver
  public:
 
   KFDisturbanceObserver(const ros::NodeHandle& nh, const ros::NodeHandle& private_nh);
+  
   void reset(const Eigen::Vector3d& initial_position, const Eigen::Vector3d& initial_velocity,
              const Eigen::Vector3d& initial_attitude, const Eigen::Vector3d& initial_angular_rate,
              const Eigen::Vector3d& initial_external_forces,
