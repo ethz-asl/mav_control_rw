@@ -8,11 +8,11 @@ if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64" AND NOT APPLE)
 endif()
 
 find_package(catkin REQUIRED COMPONENTS
-	mav_msgs
-	roscpp
+  mav_msgs
+  roscpp
   cmake_modules
-	tf
-	mav_control_interface
+  tf
+  mav_control_interface
   mav_disturbance_observer
   dynamic_reconfigure
 )
@@ -24,10 +24,10 @@ generate_dynamic_reconfigure_options(
 )
 
 catkin_package(
-	INCLUDE_DIRS include ${Eigen_INCLUDE_DIRS}
-	LIBRARIES mav_linear_mpc
-	CATKIN_DEPENDS mav_msgs roscpp cmake_modules tf mav_control_interface mav_disturbance_observer dynamic_reconfigure
-	DEPENDS Eigen
+  INCLUDE_DIRS include ${Eigen_INCLUDE_DIRS}
+  LIBRARIES mav_linear_mpc
+  CATKIN_DEPENDS mav_msgs roscpp cmake_modules tf mav_control_interface mav_disturbance_observer dynamic_reconfigure
+  DEPENDS Eigen
 )
 
 include_directories(

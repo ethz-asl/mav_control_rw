@@ -21,10 +21,10 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(Eigen REQUIRED)
 
 catkin_package(
-	INCLUDE_DIRS include ${Eigen_INCLUDE_DIRS}
-	LIBRARIES mav_control_interface
-	CATKIN_DEPENDS cmake_modules roscpp mav_msgs nav_msgs std_msgs std_srvs tf tf_conversions visualization_msgs
-	DEPENDS Eigen
+  INCLUDE_DIRS include ${Eigen_INCLUDE_DIRS}
+  LIBRARIES mav_control_interface
+  CATKIN_DEPENDS cmake_modules roscpp mav_msgs nav_msgs std_msgs std_srvs tf tf_conversions visualization_msgs
+  DEPENDS Eigen
 )
 
 include_directories(

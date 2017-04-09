@@ -5,10 +5,10 @@ add_definitions(-std=c++11)
 set(CMAKE_BUILD_TYPE Release)
 
 find_package(catkin REQUIRED COMPONENTS
-	dynamic_reconfigure
-	mav_msgs
+  dynamic_reconfigure
+  mav_msgs
   cmake_modules
-	roscpp
+  roscpp
   tf
   message_generation
   message_runtime
@@ -28,10 +28,10 @@ add_message_files(
 generate_messages(DEPENDENCIES std_msgs)
 
 catkin_package(
-	INCLUDE_DIRS include ${Eigen_INCLUDE_DIRS}
-	LIBRARIES KF_disturbance_observer
-	CATKIN_DEPENDS dynamic_reconfigure mav_msgs cmake_modules roscpp tf message_generation message_runtime
-	DEPENDS Eigen
+  INCLUDE_DIRS include ${Eigen_INCLUDE_DIRS}
+  LIBRARIES KF_disturbance_observer
+  CATKIN_DEPENDS dynamic_reconfigure mav_msgs cmake_modules roscpp tf message_generation message_runtime
+  DEPENDS Eigen
 )
 
 include_directories(

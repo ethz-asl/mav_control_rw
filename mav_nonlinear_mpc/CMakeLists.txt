@@ -19,13 +19,13 @@ else (Openblas_FOUND)
 endif (Openblas_FOUND)
 
 find_package(catkin REQUIRED COMPONENTS
-	cmake_modules
-	roscpp
-	mav_msgs
-	dynamic_reconfigure
-	tf
-	mav_control_interface
-	mav_disturbance_observer
+  cmake_modules
+  roscpp
+  mav_msgs
+  dynamic_reconfigure
+  tf
+  mav_control_interface
+  mav_disturbance_observer
 )
 
 find_package(Eigen REQUIRED)
@@ -35,10 +35,10 @@ generate_dynamic_reconfigure_options(
   )
 
 catkin_package(
-	INCLUDE_DIRS include ${Eigen_INCLUDE_DIRS}
-	LIBRARIES mav_nonlinear_mpc
-	CATKIN_DEPENDS cmake_modules roscpp mav_msgs dynamic_reconfigure tf mav_control_interface mav_disturbance_observer
-	DEPENDS Eigen
+  INCLUDE_DIRS include ${Eigen_INCLUDE_DIRS}
+  LIBRARIES mav_nonlinear_mpc
+  CATKIN_DEPENDS cmake_modules roscpp mav_msgs dynamic_reconfigure tf mav_control_interface mav_disturbance_observer
+  DEPENDS Eigen
 )
 
 include_directories(
@@ -79,10 +79,10 @@ add_library(mav_nonlinear_mpc
 )
 
 target_include_directories(mav_nonlinear_mpc PUBLIC
-	solver/
-	solver/qpoases
-	solver/qpoases/INCLUDE
-	solver/qpoases/SRC
+  solver/
+  solver/qpoases
+  solver/qpoases/INCLUDE
+  solver/qpoases/SRC
 )
 
 target_link_libraries(mav_nonlinear_mpc ${lapacke_LIBRARIES} ${catkin_LIBRARIES})
