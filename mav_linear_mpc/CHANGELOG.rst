@@ -2,7 +2,7 @@
 Changelog for package mav_linear_mpc
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
+1.0.0 (10.04.2017)
 -----------
 * publish avg control loop in ms
 * show solver time in ms

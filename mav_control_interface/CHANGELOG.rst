@@ -2,7 +2,7 @@
 Changelog for package mav_control_interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
+1.0.0 (10.04.2017)
 -----------
 * takeoff even if you set noRcTeleop
 * always build in release mode

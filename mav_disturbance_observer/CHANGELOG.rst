@@ -2,7 +2,7 @@
 Changelog for package mav_disturbance_observer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
+1.0.0 (10.04.2017)
 -----------
 * remove dependency on eigen_catkin
 * build in release mode

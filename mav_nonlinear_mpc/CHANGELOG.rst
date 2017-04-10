@@ -2,7 +2,7 @@
 Changelog for package mav_nonlinear_mpc
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
+1.0.0 (10.04.2017)
 -----------
 * remove dependency on eigen_catkin
 * add solver setup m file
