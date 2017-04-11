@@ -212,7 +212,7 @@ private:
   mav_msgs::EigenOdometry current_state_;
   mav_msgs::EigenTrajectoryPointDeque current_reference_queue_;
 
-  void PublishAttitudeCommand(const mav_msgs::EigenRollPitchYawrateThrust& command, double yaw);
+  void PublishAttitudeCommand(const mav_msgs::EigenRollPitchYawrateThrust& command);
   void PublishStateInfo(const std::string& info);
   void PublishCurrentReference();
   void PublishPredictedState();
@@ -285,12 +285,11 @@ private:
       command.roll = evt.rc_data.right_side * fsm.parameters_.rc_max_roll_pitch_command_;
       command.yaw_rate = -evt.rc_data.left_side * fsm.parameters_.rc_max_yaw_rate_command_;
 
-      //a hack to turn yaw_rate into yaw (needed by mavros). Limited to a bit under pi to prevent turning the worng way
-      double yaw = fsm.current_state_.getYaw() + std::min(3.1, command.yaw_rate);
-
       constexpr double thrust_below_hovering_factor = 0.8;
       command.thrust.z() = (evt.rc_data.left_up_down + 1.0) * fsm.controller_->getMass() * 9.81 * thrust_below_hovering_factor;
-      fsm.PublishAttitudeCommand(command, yaw);
+
+
+      fsm.PublishAttitudeCommand(command);
     }
   };
 
@@ -339,13 +338,10 @@ private:
     template<class EVT, class FSM, class SourceState, class TargetState>
     void operator()(EVT const& evt, FSM& fsm, SourceState&, TargetState&)
     {
-      mav_msgs::EigenTrajectoryPoint ref_point;
-      fsm.controller_->getCurrentReference(&ref_point);
-      double yaw = ref_point.getYaw();
 
       mav_msgs::EigenRollPitchYawrateThrust command;
       fsm.controller_->calculateRollPitchYawrateThrustCommand(&command);
-      fsm.PublishAttitudeCommand(command, yaw);
+      fsm.PublishAttitudeCommand(command);
       fsm.PublishCurrentReference();
       fsm.PublishPredictedState();
     }
