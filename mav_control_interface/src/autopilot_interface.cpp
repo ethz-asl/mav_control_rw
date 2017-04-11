@@ -99,28 +99,27 @@ void AscTecCommandPublisher::publishCommand(
 
 MavRosCommandPublisher::MavRosCommandPublisher(const ros::NodeHandle& nh)
     : BaseCommandPublisher(nh) {
-  attitude_command_publisher_ = nh_.advertise<geometry_msgs::PoseStamped>(
-      "mavros/setpoint_attitude/attitude", 1);
-  throttle_command_publisher_ = nh_.advertise<std_msgs::Float64>(
-      "mavros/setpoint_attitude/att_throttle", 1);
+  command_publisher_ = nh_.advertise<mavros_msgs::AttitudeTarget>(
+      "mavros/setpoint_raw/attitude", 1);
 }
 
 void MavRosCommandPublisher::publishCommand(
     const mav_msgs::EigenRollPitchYawrateThrust& command, double yaw,
     double thrust_min, double thrust_max) {
-  geometry_msgs::PoseStamped attitude_msg;
-  attitude_msg.header.stamp = ros::Time::now();
+  mavros_msgs::AttitudeTarget command_msg;
+  command_msg.header.stamp = ros::Time::now();
+  command_msg.type_mask = mavros_msgs::AttitudeTarget::IGNORE_ROLL_RATE |
+                          mavros_msgs::AttitudeTarget::IGNORE_PITCH_RATE |
+                          mavros_msgs::AttitudeTarget::IGNORE_YAW_RATE;
 
   // we need yaw not yaw rate so for now I just grab the predicted yaw
   // TODO find less horrible hack
-  attitude_msg.pose.orientation =
+  command_msg.orientation =
       tf::createQuaternionMsgFromRollPitchYaw(command.roll, command.pitch, yaw);
-  attitude_command_publisher_.publish(attitude_msg);
 
-  std_msgs::Float64 throttle_msg;
   // throttle must be between 0 and 1 (use min and max thrust to get there)
-  throttle_msg.data =
+  command_msg.thrust =
       (command.thrust.z() - thrust_min) / (thrust_max - thrust_min);
-  throttle_command_publisher_.publish(throttle_msg);
+  command_publisher_.publish(command_msg);
   return;
 }

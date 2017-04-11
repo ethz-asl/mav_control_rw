@@ -1,7 +1,7 @@
 #ifndef AUTOPILOT_INTERFACE_H_
 #define AUTOPILOT_INTERFACE_H_
 
-#include <geometry_msgs/PoseStamped.h>
+#include <mavros_msgs/AttitudeTarget.h>
 #include <mav_msgs/default_topics.h>
 #include <ros/ros.h>
 #include <std_msgs/Float64.h>
@@ -51,8 +51,7 @@ class MavRosCommandPublisher : public BaseCommandPublisher {
                       double yaw, double thrust_min, double thrust_max);
 
  private:
-  ros::Publisher attitude_command_publisher_;
-  ros::Publisher throttle_command_publisher_;
+  ros::Publisher command_publisher_;
 };
 
 class CommandInterface {
