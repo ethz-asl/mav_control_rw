@@ -135,13 +135,31 @@ void MavRosCommandPublisher::publishCommand(
 
   // Horrible hacks here, fudging a yaw setpoint from the commanded rate
   // A better solution is needed, but this will get us flying
-  command_msg.orientation = tf::createQuaternionMsgFromRollPitchYaw(
-      command.roll, command.pitch,
-      internal_yaw_ + yaw_gain_ * command.yaw_rate);
+
+  geometry_msgs::Quaternion attitudetarget_orientation_msg;
+  tf::Quaternion attitudetarget_orientation;
+  attitudetarget_orientation.setRPY(command.roll, command.pitch, internal_yaw_ + yaw_gain_*command.yaw_rate);
+  attitudetarget_orientation_msg.x = attitudetarget_orientation.x();
+  attitudetarget_orientation_msg.y = attitudetarget_orientation.y();
+  attitudetarget_orientation_msg.z = attitudetarget_orientation.z();
+  attitudetarget_orientation_msg.w = attitudetarget_orientation.w();
+  geometry_msgs::Vector3 attitudetarget_bodyrate_msg;
+  attitudetarget_bodyrate_msg.x = 0.0;
+  attitudetarget_bodyrate_msg.y = 0.0;
+  attitudetarget_bodyrate_msg.z = 0.0;
+  command_msg.orientation = attitudetarget_orientation_msg;
+  command_msg.body_rate = attitudetarget_bodyrate_msg;
+
+  
+ // command_msg.orientation = tf::createQuaternionMsgFromRollPitchYaw(
+  //    command.roll, command.pitch,
+   //   internal_yaw_);
+
+  std::cout << "command.roll: " << command.roll << "\t command pitch: "<< command.pitch << std::endl;
 
   // throttle must be between 0 and 1 (use min and max thrust to get there)
-  double thrust =
-      (command.thrust.z() - thrust_min) / (thrust_max - thrust_min);
+  double thrust = (command.thrust.z()/2.27)/20.5; // scaling from data fitting
+  //    (command.thrust.z() - thrust_min) / (thrust_max - thrust_min);
 
   command_msg.thrust = std::min(1.0, std::max(0.0, thrust));
   command_publisher_.publish(command_msg);
