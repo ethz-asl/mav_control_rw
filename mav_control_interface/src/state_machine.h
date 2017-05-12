@@ -574,7 +574,7 @@ private:
     template<class FSM, class SourceState, class TargetState>
     bool operator()(const OdometryWatchdog& evt, FSM& fsm, SourceState&, TargetState&)
     {
-      return (ros::Time::now().toNSec() - fsm.current_state_.timestamp_ns) > kOdometryOutdated_ns;
+      return (std::abs(ros::Time::now().toNSec() - fsm.current_state_.timestamp_ns)) > kOdometryOutdated_ns;
     }
   };
 

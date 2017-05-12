@@ -129,6 +129,8 @@ void MavControlInterfaceImpl::OdometryCallback(const nav_msgs::OdometryConstPtr&
   ROS_INFO_ONCE("Control interface got first odometry message.");
   mav_msgs::EigenOdometry odometry;
   mav_msgs::eigenOdometryFromMsg(*odometry_msg, &odometry);
+  // Stamp odometry upon reception to be robust against timestamps "in the future".
+  odometry.timestamp_ns = ros::Time::now().toNSec();
   state_machine_->process_event(state_machine::OdometryUpdate(odometry));
 }
 
