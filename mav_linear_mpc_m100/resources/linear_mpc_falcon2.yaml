@@ -1,0 +1,64 @@
+#==================================================================================================================
+#
+# Project:  Baseline MPC for Firefly.
+#
+# function: MPC Position controller and Kalman Filter parameters.
+#
+# Author: Mina Kamel  mina.kamel@ethz.ch
+#
+# Ge:nerated: 03-Apr-2015 13:11:59
+#
+#==================================================================================================================
+
+  mass: 2.91
+  roll_time_constant : 0.249
+  pitch_time_constant : 0.270
+  vertical_velocity_time_constant : 3.376
+
+  roll_gain : 1.060
+  pitch_gain : 1.047
+  vertical_velocity_gain : 2.812
+  drag_coefficients : [ 0.08 , 0.08 , 0.0]
+
+# dynamic config default values:
+  q_x : 60.0
+  q_y : 60.0
+  q_z : 45.99977
+
+  q_vx : 20.0
+  q_vy : 20.0
+  q_vz : 19.9999
+
+  q_roll  : 29.99985
+  q_pitch : 31.99984
+
+  r_roll  : 121.39
+  r_pitch : 121.39
+  r_thrust : 15.0
+
+  r_droll  : 0.15
+  r_dpitch : 0.15
+  r_dthrust: 0.001
+
+  roll_max  : deg(18.53) #0.3234 in rad
+  pitch_max : deg(18.53) #0.3234 in rad 
+  thrust_min: -2 #m/s
+  thrust_max: 2 #m/s
+
+  K_yaw : 1.9
+  Ki_height : 0.2
+
+  height_error_integration_limit : 5
+  enable_offset_free : true
+  
+  use_height_error_integrator : false
+  use_KF_estimated_state : false
+  
+  sampling_time: 0.01    #IMPORTANT: set this equal to the rate of odometry msg
+  prediction_sampling_time: 0.1
+
+  Ki_xy: 0.2
+  Ki_z: 0.3
+  position_error_integration_limit: 2
+  antiwindup_ball: 0.4
+  enable_integrator : true
