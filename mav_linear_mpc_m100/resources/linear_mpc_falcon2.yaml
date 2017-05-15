@@ -13,11 +13,11 @@
   mass: 2.91
   roll_time_constant : 0.249
   pitch_time_constant : 0.270
-  vertical_velocity_time_constant : 3.376
+  vertical_velocity_time_constant : 0.3376
 
   roll_gain : 1.060
   pitch_gain : 1.047
-  vertical_velocity_gain : 2.812
+  vertical_velocity_gain : 1.1812
   drag_coefficients : [ 0.08 , 0.08 , 0.0]
 
 # dynamic config default values:
