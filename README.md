@@ -23,7 +23,6 @@ If you use any of these controllers within your research, please cite one of the
                 booktitle   = "Robot Operating System (ROS) The Complete Reference, Volume 2",
                 publisher   = "Springer",
                 year = “2017”,
-                note  = "(to appear)",
 }
 ```
 
