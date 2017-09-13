@@ -46,6 +46,7 @@
 #include <Eigen/Eigen>
 #include <iostream>
 #include <unsupported/Eigen/MatrixFunctions>
+#include <geometry_msgs/WrenchStamped.h>
 
 #include <solver.h>
 
@@ -144,9 +145,13 @@ class LinearModelPredictiveController
   static constexpr int kDisturbanceSize = 3;
   static constexpr int kPredictionHorizonSteps = 20;
   static constexpr double kGravity = 9.8066;
+  static constexpr double kExternalWrenchLifeTimeSec = 0.5;
+
 
   // ros node handles
   ros::NodeHandle nh_, private_nh_;
+
+  ros::Subscriber external_wrench_sub_;
 
   // reset integrator service
   ros::ServiceServer reset_integrator_service_server_;
@@ -231,6 +236,13 @@ class LinearModelPredictiveController
   // most recent odometry information
   mav_msgs::EigenOdometry odometry_;
   bool received_first_odometry_;
+
+  // external wrench callback
+  void externalWrenchCallback(const geometry_msgs::WrenchStampedConstPtr msg);
+  Eigen::Vector3d B_external_forces_;
+  Eigen::Vector3d B_external_moments_;
+  ros::Time last_wrench_timestamp_;
+
 };
 
 }  // end namespace mav_control

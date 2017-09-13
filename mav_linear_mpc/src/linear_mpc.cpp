@@ -40,6 +40,8 @@ constexpr int LinearModelPredictiveController::kMeasurementSize;
 constexpr int LinearModelPredictiveController::kDisturbanceSize;
 constexpr double LinearModelPredictiveController::kGravity;
 constexpr int LinearModelPredictiveController::kPredictionHorizonSteps;
+constexpr double LinearModelPredictiveController::kExternalWrenchLifeTimeSec;
+
 
 LinearModelPredictiveController::LinearModelPredictiveController(const ros::NodeHandle& nh,
                                                                  const ros::NodeHandle& private_nh)
@@ -59,9 +61,15 @@ LinearModelPredictiveController::LinearModelPredictiveController(const ros::Node
   reset_integrator_service_server_ = nh_.advertiseService(
         "reset_integrator", &LinearModelPredictiveController::resetIntegratorServiceCallback, this);
 
+  B_external_forces_.setZero();
+  B_external_moments_.setZero();
+
   initializeParameters();
 
   mpc_queue_.initializeQueue(sampling_time_, prediction_sampling_time_);
+
+  external_wrench_sub_ = nh_.subscribe("external_wrench", 5,
+                                         &LinearModelPredictiveController::externalWrenchCallback, this);
 }
 
 LinearModelPredictiveController::~LinearModelPredictiveController()
@@ -367,7 +375,13 @@ void LinearModelPredictiveController::calculateRollPitchYawrateThrustCommand(
   if (enable_offset_free_ == true) {
     estimated_disturbances = KF_estimated_state.segment(12, kDisturbanceSize);
   } else {
-    estimated_disturbances.setZero();
+
+    if(std::abs((last_wrench_timestamp_ - ros::Time::now()).toSec()) < kExternalWrenchLifeTimeSec){
+      estimated_disturbances = odometry_.orientation_W_B.toRotationMatrix()*B_external_forces_;
+    }else{
+      ROS_WARN("rejected external wrench as it is too old..");
+      estimated_disturbances.setZero(kDisturbanceSize);
+    }
   }
 
   if (enable_integrator_) {
@@ -546,6 +560,22 @@ bool LinearModelPredictiveController::getPredictedState(
   }
 
   return true;
+}
+
+void LinearModelPredictiveController::externalWrenchCallback(const geometry_msgs::WrenchStampedConstPtr msg){
+  if(msg->header.frame_id != "/body"){
+    ROS_WARN_THROTTLE(5, "Wrench might not be in MAV body frame. Please check frame_id");
+  }
+
+  last_wrench_timestamp_ = msg->header.stamp;
+
+  B_external_forces_(0) = msg->wrench.force.x;
+  B_external_forces_(1) = msg->wrench.force.y;
+  B_external_forces_(2) = msg->wrench.force.z;
+
+  B_external_moments_(0) = msg->wrench.torque.x;
+  B_external_moments_(1) = msg->wrench.torque.y;
+  B_external_moments_(2) = msg->wrench.torque.z;
 }
 
 }
