@@ -59,6 +59,9 @@ NonlinearModelPredictiveControl::NonlinearModelPredictiveControl(const ros::Node
   reference_.setZero();
   referenceN_.setZero();
 
+  B_external_forces_.setZero();
+  B_external_moments_.setZero();
+
   reset_integrator_service_server_ = nh_.advertiseService(
       "reset_integrator", &NonlinearModelPredictiveControl::resetIntegratorServiceCallback, this);
 
@@ -309,7 +312,15 @@ void NonlinearModelPredictiveControl::calculateRollPitchYawrateThrustCommand(
   if (enable_offset_free_ == true) {
     estimated_disturbances = KF_estimated_state.segment(12, kDisturbanceSize);
   } else {
-    estimated_disturbances.setZero(kDisturbanceSize);
+    ros::Time odom_timestamp;
+    odom_timestamp.fromNSec(odometry_.timestamp_ns);
+
+    if(abs((last_wrench_timestamp_ - odom_timestamp).toSec()) < kExternalWrenchLifeTimeSec){
+      estimated_disturbances = odometry_.orientation_W_B.toRotationMatrix()*B_external_forces_;
+    }else{
+      ROS_WARN("rejected external wrench as it is too old..");
+      estimated_disturbances.setZero(kDisturbanceSize);
+    }
   }
 
   if (enable_integrator_) {
@@ -527,5 +538,22 @@ bool NonlinearModelPredictiveControl::getPredictedState(
 
   return true;
 }
+
+void NonlinearModelPredictiveControl::externalWrenchCallback(const geometry_msgs::WrenchStampedConstPtr msg){
+  if(msg->header.frame_id != "/body"){
+    ROS_WARN_THROTTLE(5, "Wrench might not be in MAV body frame. Please check frame_id");
+  }
+
+  last_wrench_timestamp_ = msg->header.stamp;
+
+  B_external_forces_(0) = msg->wrench.force.x;
+  B_external_forces_(1) = msg->wrench.force.y;
+  B_external_forces_(2) = msg->wrench.force.z;
+
+  B_external_moments_(0) = msg->wrench.torque.x;
+  B_external_moments_(1) = msg->wrench.torque.y;
+  B_external_moments_(2) = msg->wrench.torque.z;
+}
+
 
 }

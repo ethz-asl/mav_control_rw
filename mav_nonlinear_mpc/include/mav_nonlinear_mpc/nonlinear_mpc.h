@@ -42,6 +42,7 @@
 #include <mav_disturbance_observer/KF_disturbance_observer.h>
 #include <std_srvs/Empty.h>
 #include <lapacke.h>
+#include <geometry_msgs/WrenchStamped.h>
 
 ACADOvariables acadoVariables;
 ACADOworkspace acadoWorkspace;
@@ -137,9 +138,12 @@ class NonlinearModelPredictiveControl
   // constants
   static constexpr double kGravity = 9.8066;
   static constexpr int kDisturbanceSize = 3;
+  static constexpr double kExternalWrenchLifeTimeSec = 0.5;
 
   // ros node handles
   ros::NodeHandle nh_, private_nh_;
+
+  ros::Subscriber external_wrench_sub_;
 
   // reset integrator service
   ros::ServiceServer reset_integrator_service_server_;
@@ -223,6 +227,12 @@ class NonlinearModelPredictiveControl
 
   // solve continuous time Riccati equation
   Eigen::MatrixXd solveCARE(Eigen::MatrixXd Q, Eigen::MatrixXd R);
+
+  // external wrench callback
+  void externalWrenchCallback(const geometry_msgs::WrenchStampedConstPtr msg);
+  Eigen::Vector3d B_external_forces_;
+  Eigen::Vector3d B_external_moments_;
+  ros::Time last_wrench_timestamp_;
 
 };
 
