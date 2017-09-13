@@ -34,6 +34,7 @@ namespace mav_control {
 
 constexpr double NonlinearModelPredictiveControl::kGravity;
 constexpr int NonlinearModelPredictiveControl::kDisturbanceSize;
+constexpr double NonlinearModelPredictiveControl::kExternalWrenchLifeTimeSec;
 
 NonlinearModelPredictiveControl::NonlinearModelPredictiveControl(const ros::NodeHandle& nh,
                                                                  const ros::NodeHandle& private_nh)
@@ -314,10 +315,7 @@ void NonlinearModelPredictiveControl::calculateRollPitchYawrateThrustCommand(
   if (enable_offset_free_ == true) {
     estimated_disturbances = KF_estimated_state.segment(12, kDisturbanceSize);
   } else {
-    ros::Time odom_timestamp;
-    odom_timestamp.fromNSec(odometry_.timestamp_ns);
-
-    if(abs((last_wrench_timestamp_ - odom_timestamp).toSec()) < kExternalWrenchLifeTimeSec){
+    if(std::abs((last_wrench_timestamp_ - ros::Time::now()).toSec()) < kExternalWrenchLifeTimeSec){
       estimated_disturbances = odometry_.orientation_W_B.toRotationMatrix()*B_external_forces_;
     }else{
       ROS_WARN("rejected external wrench as it is too old..");
