@@ -65,6 +65,8 @@ NonlinearModelPredictiveControl::NonlinearModelPredictiveControl(const ros::Node
   reset_integrator_service_server_ = nh_.advertiseService(
       "reset_integrator", &NonlinearModelPredictiveControl::resetIntegratorServiceCallback, this);
 
+  external_wrench_sub_ = nh_.subscribe("external_wrench", 5,
+                                       &NonlinearModelPredictiveControl::externalWrenchCallback, this);
   initializeParameters();
 
   mpc_queue_.initializeQueue(sampling_time_, prediction_sampling_time_);
