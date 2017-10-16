@@ -34,6 +34,9 @@ StateMachineDefinition::StateMachineDefinition(const ros::NodeHandle& nh, const 
   command_publisher_ = nh_.advertise<mav_msgs::RollPitchYawrateThrust>(
       mav_msgs::default_topics::COMMAND_ROLL_PITCH_YAWRATE_THRUST, 1);
 
+  command_ff_publisher_ = nh_.advertise<mav_msgs::RollPitchYawrateThrustFeedForward>(
+      mav_msgs::default_topics::COMMAND_ROLL_PITCH_YAWRATE_THRUST_FEEDFORWARD, 1);
+
   current_reference_publisher_ = nh_.advertise<trajectory_msgs::MultiDOFJointTrajectory>(
       "command/current_reference", 1);
 
@@ -53,6 +56,7 @@ void StateMachineDefinition::PublishAttitudeCommand (
     const mav_msgs::EigenRollPitchYawrateThrust& command) const
 {
   mav_msgs::RollPitchYawrateThrustPtr msg(new mav_msgs::RollPitchYawrateThrust);
+  mav_msgs::RollPitchYawrateThrustFeedForwardPtr msg_ff(new mav_msgs::RollPitchYawrateThrustFeedForward);
 
   mav_msgs::EigenRollPitchYawrateThrust tmp_command = command;
   tmp_command.thrust.x() = 0;
@@ -62,6 +66,18 @@ void StateMachineDefinition::PublishAttitudeCommand (
   msg->header.stamp = ros::Time::now();  // TODO(acmarkus): get from msg
   mav_msgs::msgRollPitchYawrateThrustFromEigen(command, msg.get());
   command_publisher_.publish(msg);
+
+  msg_ff->header.stamp = msg->header.stamp;
+  msg_ff->roll = msg->roll;
+  msg_ff->pitch = msg->pitch;
+  msg_ff->yaw_rate = msg->yaw_rate;
+  msg_ff->thrust.x = 0.0;
+  msg_ff->thrust.y = 0.0;
+  msg_ff->thrust.z = msg->thrust.z;
+  msg_ff->torque_ff.x = 0.0;
+  msg_ff->torque_ff.y = 0.0;
+  msg_ff->torque_ff.z = 0.0;
+  command_ff_publisher_.publish(msg_ff);
 }
 
 void StateMachineDefinition::PublishStateInfo(const std::string& info)

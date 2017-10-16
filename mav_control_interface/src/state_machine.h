@@ -33,6 +33,7 @@
 
 #include <mav_msgs/conversions.h>
 #include <mav_msgs/eigen_mav_msgs.h>
+#include <mav_msgs/RollPitchYawrateThrustFeedForward.h>
 #include <ros/ros.h>
 #include <tf/transform_broadcaster.h>
 
@@ -208,6 +209,7 @@ private:
   std::string reference_frame_id_;
   std::shared_ptr<PositionControllerInterface> controller_;
   ros::Publisher command_publisher_;
+  ros::Publisher command_ff_publisher_;
   ros::Publisher state_info_publisher_;
 
   tf::TransformBroadcaster transform_broadcaster_;
