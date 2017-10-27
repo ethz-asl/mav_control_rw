@@ -537,7 +537,7 @@ bool NonlinearModelPredictiveControl::getPredictedState(
                  
     pnt.time_from_start_ns = static_cast<int64_t>(i) *
                            static_cast<int64_t>(sampling_time_ * 1000000000.0);
-    pnt.timestamp_ns = odometry_.timestamp_ns + pnt.time_from_start_ns
+    pnt.timestamp_ns = odometry_.timestamp_ns + pnt.time_from_start_ns;
   }
 
   return true;
