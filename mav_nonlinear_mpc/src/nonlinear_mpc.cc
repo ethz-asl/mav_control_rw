@@ -28,6 +28,8 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <tf/transform_datatypes.h>
+
 #include <mav_nonlinear_mpc/nonlinear_mpc.h>
 
 namespace mav_control {
@@ -240,6 +242,7 @@ void NonlinearModelPredictiveControl::setOdometry(const mav_msgs::EigenOdometry&
   }
 
   odometry_.orientation_W_B = odometry.orientation_W_B;
+  odometry_.timestamp_ns = odometry.timestamp_ns;
   previous_odometry.orientation_W_B = odometry.orientation_W_B;
 }
 
@@ -522,6 +525,19 @@ bool NonlinearModelPredictiveControl::getPredictedState(
   for (size_t i = 0; i < ACADO_N + 1; i++) {
     mav_msgs::EigenTrajectoryPoint pnt;
     pnt.position_W = state_.block(i, 6, 1, 3).transpose();
+    pnt.velocity_W = state_.block(i, 0, 1, 3).transpose();
+
+    tf::Quaternion tf_orientation;
+    tf_orientation.setRPY(state_(i,3), state_(i,4), state_(i,5));
+    pnt.orientation_W_B.x() = tf_orientation.x();
+    pnt.orientation_W_B.y() = tf_orientation.y();
+    pnt.orientation_W_B.z() = tf_orientation.z();
+    pnt.orientation_W_B.w() = tf_orientation.w();
+                
+    pnt.time_from_start_ns = static_cast<int64_t>(i) *
+                           static_cast<int64_t>(sampling_time_ * 1000000000.0);
+    pnt.timestamp_ns = odometry_.timestamp_ns + pnt.time_from_start_ns;
+
     (*predicted_state).push_back(pnt);
   }
 
