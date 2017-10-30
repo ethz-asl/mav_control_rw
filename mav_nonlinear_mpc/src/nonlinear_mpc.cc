@@ -534,7 +534,7 @@ bool NonlinearModelPredictiveControl::getPredictedState(
     pnt.orientation_W_B.z() = tf_orientation.z();
     pnt.orientation_W_B.w() = tf_orientation.w();
                 
-    pnt.time_from_start_ns = static_cast<int64_t>(i+1) *
+    pnt.time_from_start_ns = static_cast<int64_t>(i) *
                            static_cast<int64_t>(sampling_time_ * 1000000000.0);
     pnt.timestamp_ns = odometry_.timestamp_ns + pnt.time_from_start_ns;
 
