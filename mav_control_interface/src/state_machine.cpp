@@ -135,6 +135,13 @@ void StateMachineDefinition::PublishPredictedState()
 
     trajectory_msgs::MultiDOFJointTrajectory msg;
     msgMultiDofJointTrajectoryFromEigen(predicted_state, &msg);
+
+    //add in timestamp information
+    if (!predicted_state.empty()) {
+      msg.header.stamp.fromNSec(predicted_state.front().timestamp_ns -
+                         predicted_state.front().time_from_start_ns);
+    }
+
     full_predicted_state_publisher_.publish(msg);
   }
 }
