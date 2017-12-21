@@ -17,12 +17,11 @@ INCLUDE_DIRECTORIES( ${ACADO_INCLUDE_DIRS} )
 #
 # Build an executable
 #
-ADD_EXECUTABLE( nmpc_solver_setup nmpc_solver_setup.cpp )
+ADD_EXECUTABLE(../solver/nmpc_solver_setup nmpc_solver_setup.cpp )
 
-TARGET_LINK_LIBRARIES( nmpc_solver_setup 
+TARGET_LINK_LIBRARIES(../solver/nmpc_solver_setup 
   ${ACADO_SHARED_LIBRARIES}
 )
-# Windows
-#TARGET_LINK_LIBRARIES( EXEC_NAME ${ACADO_STATIC_LIBRARIES} )
-SET_TARGET_PROPERTIES( nmpc_solver_setup
-                       PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
+
+SET_TARGET_PROPERTIES(../solver/nmpc_solver_setup PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
+

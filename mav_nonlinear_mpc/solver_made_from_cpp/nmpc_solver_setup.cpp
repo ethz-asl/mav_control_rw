@@ -1,7 +1,7 @@
 /*
- *    \file   nmpc_solver_setup.cpp
- *    \author Oskar Ljungqvist
- *    \date   2017-11-22
+ *    file:   nmpc_solver_setup.cpp
+ *    author: Oskar Ljungqvist
+ *    date:   2017-12-21
  *
  *    Comment: modified version of the nmpc_solver_setup.m works directly in ubutu.
  */
@@ -85,7 +85,7 @@ int main( )
     BMatrix W  = eye<bool>(h.getDim());
     BMatrix WN = eye<bool>(hN.getDim());
 
-    //Define OCP problem:
+    // Define OCP problem:
     OCP ocp(0.0, N*Ts, N);
 
     ocp.subjectTo(f);

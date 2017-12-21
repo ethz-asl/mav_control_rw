@@ -4,7 +4,7 @@ Description:
 
 This folder contains code to Automatically generate an MPC controller using ACADO toolkit.
 
-The file nmpc_solver_setup.cpp is what defines the MPC controller and it is this you should change in order the change the controller. Then build/install it using the explanation below.
+The file nmpc_solver_setup.cpp is what defines the MPC controller and it is this you should change in order the change the controller. Then build/install it using the explanation below. As an example it easy to change the prediction horizon if that is prefered.
 
 Prerequests: 
 
@@ -15,14 +15,18 @@ source [pathToAcado]/build/acado_env.sh
 
 Build/Install: 
 
-From this folder:
+From this folder do:
 
 mkdir build
 cd build
 cmake ..
 make
 
-cd ..
+The executable is now placed in the folder ../solver
+
+Execute it by running the following commands:
+
+cd ../../solver
 ./nmpc_solver_setup
 
 Then the controller is generated.
