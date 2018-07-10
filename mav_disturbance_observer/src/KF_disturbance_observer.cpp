@@ -405,12 +405,7 @@ bool KFDisturbanceObserver::updateEstimator()
   K_ = state_covariance_ * H_.transpose() * tmp.inverse();
 
   //account for yaw wrapping
-  while(std::abs(measurements_(8) - predicted_state_(8)) > std::abs(measurements_(8) - predicted_state_(8) + 2.0*M_PI)){
-    measurements_(8) += 2.0*M_PI;
-  }
-  while(std::abs(measurements_(8) - predicted_state_(8)) > std::abs(measurements_(8) - predicted_state_(8) - 2.0*M_PI)){
-    measurements_(8) -= 2.0*M_PI;
-  }
+  measurements_(8) = fmod(measurements_(8) - state_(8) + M_PI, (2.0 * M_PI)) - M_PI + state_(8);
 
   //Update with measurements
   state_ = predicted_state_ + K_ * (measurements_ - H_ * state_);
