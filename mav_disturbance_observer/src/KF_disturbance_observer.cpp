@@ -49,8 +49,7 @@ KFDisturbanceObserver::KFDisturbanceObserver(const ros::NodeHandle& nh,
       F_(kStateSize, kStateSize),
       H_(kMeasurementSize, kStateSize),
       dyn_config_server_(ros::NodeHandle(private_nh, "KF_observer")),
-      calibration_counter_(0)
-{
+      calibration_counter_(0) {
   state_covariance_.setZero();
   process_noise_covariance_.setZero();
   measurement_covariance_.setZero();
@@ -71,9 +70,8 @@ KFDisturbanceObserver::KFDisturbanceObserver(const ros::NodeHandle& nh,
   initialize();
 }
 
-bool KFDisturbanceObserver::startCalibrationCallback(std_srvs::Empty::Request& req,
-                                                     std_srvs::Empty::Response& res)
-{
+bool KFDisturbanceObserver::startCalibrationCallback(
+    std_srvs::Empty::Request& req, std_srvs::Empty::Response& res) {
   if (startCalibration()) {
     return true;
   }
@@ -81,8 +79,7 @@ bool KFDisturbanceObserver::startCalibrationCallback(std_srvs::Empty::Request& r
   return false;
 }
 
-bool KFDisturbanceObserver::startCalibration()
-{
+bool KFDisturbanceObserver::startCalibration() {
   if (initialized_) {
     is_calibrating_ = true;
     forces_offset_.setZero();
@@ -94,18 +91,19 @@ bool KFDisturbanceObserver::startCalibration()
   return false;
 }
 
-void KFDisturbanceObserver::initialize()
-{
-
+void KFDisturbanceObserver::initialize() {
   ROS_INFO("start initializing mav_disturbance_observer:KF");
 
-  service_ = observer_nh_.advertiseService("StartCalibrateKF",
-                                           &KFDisturbanceObserver::startCalibrationCallback, this);
+  service_ = observer_nh_.advertiseService(
+      "StartCalibrateKF", &KFDisturbanceObserver::startCalibrationCallback,
+      this);
 
-  observer_state_pub_ = observer_nh_.advertise<mav_disturbance_observer::ObserverState>(
-      "observer_state", 10);
+  observer_state_pub_ =
+      observer_nh_.advertise<mav_disturbance_observer::ObserverState>(
+          "observer_state", 10);
 
-  dynamic_reconfigure::Server<mav_disturbance_observer::KFDisturbanceObserverConfig>::CallbackType f;
+  dynamic_reconfigure::Server<
+      mav_disturbance_observer::KFDisturbanceObserverConfig>::CallbackType f;
   f = boost::bind(&KFDisturbanceObserver::DynConfigCallback, this, _1, _2);
   dyn_config_server_.setCallback(f);
 
@@ -119,26 +117,28 @@ void KFDisturbanceObserver::initialize()
   initialized_ = true;
 
   ROS_INFO("Kalman Filter Initialized!");
-
 }
 
-void KFDisturbanceObserver::loadROSParams()
-{
+void KFDisturbanceObserver::loadROSParams() {
   std::vector<double> temporary_drag;
-  std::vector<double> temporary_external_forces_limit, temporary_external_moments_limit;
+  std::vector<double> temporary_external_forces_limit,
+      temporary_external_moments_limit;
   std::vector<double> temporary_omega_limit;
 
-  double P0_position, P0_velocity, P0_attitude, P0_angular_velocity, P0_force, P0_torque;
+  double P0_position, P0_velocity, P0_attitude, P0_angular_velocity, P0_force,
+      P0_torque;
 
   double calibration_duration;
   if (!observer_nh_.getParam("calibration_duration", calibration_duration)) {
-    ROS_ERROR("calibration_duration in KF are not loaded from ros parameter server");
+    ROS_ERROR(
+        "calibration_duration in KF are not loaded from ros parameter server");
     abort();
   }
   calibration_duration_ = ros::Duration(calibration_duration);
 
   if (!observer_nh_.getParam("drag_coefficients", temporary_drag)) {
-    ROS_ERROR("Drag Coefficients in KF are not loaded from ros parameter server");
+    ROS_ERROR(
+        "Drag Coefficients in KF are not loaded from ros parameter server");
     abort();
   }
 
@@ -201,7 +201,8 @@ void KFDisturbanceObserver::loadROSParams()
   }
 
   if (!observer_nh_.getParam("P0_angular_velocity", P0_angular_velocity)) {
-    ROS_ERROR("P0_angular_velocity in KF is not loaded from ros parameter server");
+    ROS_ERROR(
+        "P0_angular_velocity in KF is not loaded from ros parameter server");
     abort();
   }
 
@@ -215,13 +216,17 @@ void KFDisturbanceObserver::loadROSParams()
     abort();
   }
 
-  if (!observer_nh_.getParam("external_forces_limit", temporary_external_forces_limit)) {
-    ROS_ERROR("external_forces_limit in KF is not loaded from ros parameter server");
+  if (!observer_nh_.getParam("external_forces_limit",
+                             temporary_external_forces_limit)) {
+    ROS_ERROR(
+        "external_forces_limit in KF is not loaded from ros parameter server");
     abort();
   }
 
-  if (!observer_nh_.getParam("external_moments_limit", temporary_external_moments_limit)) {
-    ROS_ERROR("external_moments_limit in KF is not loaded from ros parameter server");
+  if (!observer_nh_.getParam("external_moments_limit",
+                             temporary_external_moments_limit)) {
+    ROS_ERROR(
+        "external_moments_limit in KF is not loaded from ros parameter server");
     abort();
   }
 
@@ -238,17 +243,20 @@ void KFDisturbanceObserver::loadROSParams()
   Eigen::MatrixXd F_continous_time(kStateSize, kStateSize);
   F_continous_time.setZero();
   F_continous_time.block<3, 3>(0, 3) = Eigen::MatrixXd::Identity(3, 3);
-  F_continous_time.block<3, 3>(3, 3) = -1.0
-      * Eigen::DiagonalMatrix<double, 3>(temporary_drag.at(0), temporary_drag.at(1),
-                                         temporary_drag.at(2));
+  F_continous_time.block<3, 3>(3, 3) =
+      -1.0 * Eigen::DiagonalMatrix<double, 3>(temporary_drag.at(0),
+                                              temporary_drag.at(1),
+                                              temporary_drag.at(2));
   F_continous_time.block<3, 3>(3, 12) = Eigen::MatrixXd::Identity(3, 3);
   F_continous_time.block<3, 3>(6, 9) = Eigen::MatrixXd::Identity(3, 3);
-  F_continous_time.block<3, 3>(9, 6) = -1.0
-      * Eigen::DiagonalMatrix<double, 3>(roll_omega_ * roll_omega_, pitch_omega_ * pitch_omega_,
-                                         yaw_omega_ * yaw_omega_);
-  F_continous_time.block<3, 3>(9, 9) = -2.0
-      * Eigen::DiagonalMatrix<double, 3>(roll_omega_ * roll_damping_, pitch_omega_ * pitch_damping_,
-                                         yaw_omega_ * yaw_damping_);
+  F_continous_time.block<3, 3>(9, 6) =
+      -1.0 * Eigen::DiagonalMatrix<double, 3>(roll_omega_ * roll_omega_,
+                                              pitch_omega_ * pitch_omega_,
+                                              yaw_omega_ * yaw_omega_);
+  F_continous_time.block<3, 3>(9, 9) =
+      -2.0 * Eigen::DiagonalMatrix<double, 3>(roll_omega_ * roll_damping_,
+                                              pitch_omega_ * pitch_damping_,
+                                              yaw_omega_ * yaw_damping_);
   F_continous_time.block<3, 3>(9, 15) = Eigen::MatrixXd::Identity(3, 3);
 
   F_ = (sampling_time_ * F_continous_time).exp().sparseView();
@@ -274,11 +282,12 @@ void KFDisturbanceObserver::loadROSParams()
 
   ROS_INFO_STREAM("state_covariance_: \n" << state_covariance_);
 
-  Eigen::Map<Eigen::Vector3d> external_forces_limit_map(temporary_external_forces_limit.data(), 3,
-                                                        1);
-  Eigen::Map<Eigen::Vector3d> external_moments_limit_map(temporary_external_moments_limit.data(), 3,
-                                                         1);
-  Eigen::Map<Eigen::Vector3d> omega_limit_map(temporary_omega_limit.data(), 3, 1);
+  Eigen::Map<Eigen::Vector3d> external_forces_limit_map(
+      temporary_external_forces_limit.data(), 3, 1);
+  Eigen::Map<Eigen::Vector3d> external_moments_limit_map(
+      temporary_external_moments_limit.data(), 3, 1);
+  Eigen::Map<Eigen::Vector3d> omega_limit_map(temporary_omega_limit.data(), 3,
+                                              1);
 
   external_forces_limit_ = external_forces_limit_map;
   external_moments_limit_ = external_moments_limit_map;
@@ -293,9 +302,8 @@ void KFDisturbanceObserver::loadROSParams()
 }
 
 void KFDisturbanceObserver::DynConfigCallback(
-    mav_disturbance_observer::KFDisturbanceObserverConfig &config, uint32_t level)
-{
-
+    mav_disturbance_observer::KFDisturbanceObserverConfig& config,
+    uint32_t level) {
   if (config.calibrate == true) {
     startCalibration();
     config.calibrate = false;
@@ -315,44 +323,44 @@ void KFDisturbanceObserver::DynConfigCallback(
   }
 
   ROS_INFO("mav_disturbance_observer:KF dynamic config is called successfully");
-
 }
 
-void KFDisturbanceObserver::feedPositionMeasurement(const Eigen::Vector3d& position)
-{
+void KFDisturbanceObserver::feedPositionMeasurement(
+    const Eigen::Vector3d& position) {
   this->measurements_(0) = position(0);
   this->measurements_(1) = position(1);
   this->measurements_(2) = position(2);
 }
 
-void KFDisturbanceObserver::feedVelocityMeasurement(const Eigen::Vector3d& velocity)
-{
+void KFDisturbanceObserver::feedVelocityMeasurement(
+    const Eigen::Vector3d& velocity) {
   this->measurements_(3) = velocity(0);
   this->measurements_(4) = velocity(1);
   this->measurements_(5) = velocity(2);
 }
 
-void KFDisturbanceObserver::feedRotationMatrix(const Eigen::Matrix3d& rotation_matrix)
-{
+void KFDisturbanceObserver::feedRotationMatrix(
+    const Eigen::Matrix3d& rotation_matrix) {
   this->rotation_matrix_ = rotation_matrix;
-  this->measurements_(6) = atan2((double) rotation_matrix(2, 1), (double) rotation_matrix(2, 2));
-  this->measurements_(7) = -asin((double) rotation_matrix(2, 0));
-  this->measurements_(8) = atan2((double) rotation_matrix(1, 0), (double) rotation_matrix(0, 0));
+  this->measurements_(6) =
+      atan2((double)rotation_matrix(2, 1), (double)rotation_matrix(2, 2));
+  this->measurements_(7) = -asin((double)rotation_matrix(2, 0));
+  this->measurements_(8) =
+      atan2((double)rotation_matrix(1, 0), (double)rotation_matrix(0, 0));
 }
 
-void KFDisturbanceObserver::feedAttitudeCommand(const Eigen::Vector4d& roll_pitch_yaw_thrust_cmd)
-{
+void KFDisturbanceObserver::feedAttitudeCommand(
+    const Eigen::Vector4d& roll_pitch_yaw_thrust_cmd) {
   this->roll_pitch_yaw_thrust_cmd_ = roll_pitch_yaw_thrust_cmd;
 }
 
-void KFDisturbanceObserver::reset(const Eigen::Vector3d& initial_position,
-                                  const Eigen::Vector3d& initial_velocity,
-                                  const Eigen::Vector3d& initial_attitude,
-                                  const Eigen::Vector3d& initial_angular_rate,
-                                  const Eigen::Vector3d& initial_external_forces,
-                                  const Eigen::Vector3d& initial_external_moments)
-{
-
+void KFDisturbanceObserver::reset(
+    const Eigen::Vector3d& initial_position,
+    const Eigen::Vector3d& initial_velocity,
+    const Eigen::Vector3d& initial_attitude,
+    const Eigen::Vector3d& initial_angular_rate,
+    const Eigen::Vector3d& initial_external_forces,
+    const Eigen::Vector3d& initial_external_moments) {
   state_covariance_ = initial_state_covariance_.asDiagonal();
 
   state_.setZero();
@@ -365,10 +373,8 @@ void KFDisturbanceObserver::reset(const Eigen::Vector3d& initial_position,
   state_.segment(15, 3) = initial_external_moments;
 }
 
-bool KFDisturbanceObserver::updateEstimator()
-{
-  if (initialized_ == false)
-    return false;
+bool KFDisturbanceObserver::updateEstimator() {
+  if (initialized_ == false) return false;
 
   ROS_INFO_ONCE("KF is updated for first time.");
   static ros::Time t_previous = ros::Time::now();
@@ -384,7 +390,7 @@ bool KFDisturbanceObserver::updateEstimator()
     t_previous = t0;
   }
 
-  //check that dt is not so different from 0.01
+  // check that dt is not so different from 0.01
   if (dt > 0.015) {
     dt = 0.015;
   }
@@ -396,27 +402,32 @@ bool KFDisturbanceObserver::updateEstimator()
   state_covariance_ = F_ * state_covariance_ * F_.transpose();
   state_covariance_.diagonal() += process_noise_covariance_;
 
-  //predict state
+  // predict state
   systemDynamics(dt);
 
-  Eigen::Matrix<double, kMeasurementSize, kMeasurementSize> tmp = H_ * state_covariance_
-      * H_.transpose() + measurement_covariance_.asDiagonal().toDenseMatrix();
+  Eigen::Matrix<double, kMeasurementSize, kMeasurementSize> tmp =
+      H_ * state_covariance_ * H_.transpose() +
+      measurement_covariance_.asDiagonal().toDenseMatrix();
 
   K_ = state_covariance_ * H_.transpose() * tmp.inverse();
 
-  //account for yaw wrapping
-  measurements_(6) = fmod(measurements_(6) - state_(6) + M_PI, (2.0 * M_PI)) - M_PI + state_(6);
+  // account for yaw wrapping
+  measurements_(8) = fmod(measurements_(8) - state_(8) + M_PI, (2.0 * M_PI)) -
+                     M_PI + state_(8);
 
-  //Update with measurements
+  // Update with measurements
   state_ = predicted_state_ + K_ * (measurements_ - H_ * state_);
 
-  //Update covariance
-  state_covariance_ = (Eigen::Matrix<double, kStateSize, kStateSize>::Identity() - K_ * H_)
-      * state_covariance_;
+  // Update covariance
+  state_covariance_ =
+      (Eigen::Matrix<double, kStateSize, kStateSize>::Identity() - K_ * H_) *
+      state_covariance_;
 
-  //Limits on estimated_disturbances
+  // Limits on estimated_disturbances
   if (state_.allFinite() == false) {
-    ROS_ERROR("The estimated state in KF Disturbance Observer has a non-finite element");
+    ROS_ERROR(
+        "The estimated state in KF Disturbance Observer has a non-finite "
+        "element");
     return false;
   }
 
@@ -448,12 +459,14 @@ bool KFDisturbanceObserver::updateEstimator()
       calibration_counter_ = 0;
       ROS_INFO("Calibration finished");
       ROS_INFO_STREAM("force offset: " << forces_offset_.transpose() << "m/s2");
-      ROS_INFO_STREAM("moment offset: " << moments_offset_.transpose() << "rad/s2");
+      ROS_INFO_STREAM("moment offset: " << moments_offset_.transpose()
+                                        << "rad/s2");
     }
   }
 
   if (observer_state_pub_.getNumSubscribers() > 0) {
-    mav_disturbance_observer::ObserverStatePtr msg(new mav_disturbance_observer::ObserverState);
+    mav_disturbance_observer::ObserverStatePtr msg(
+        new mav_disturbance_observer::ObserverState);
     msg->header.stamp = ros::Time::now();
     for (int i = 0; i < 3; i++) {
       msg->position[i] = state_(i);
@@ -471,8 +484,7 @@ bool KFDisturbanceObserver::updateEstimator()
   return true;
 }
 
-void KFDisturbanceObserver::systemDynamics(double dt)
-{
+void KFDisturbanceObserver::systemDynamics(double dt) {
   Eigen::Vector3d old_position = state_.segment(0, 3);
   Eigen::Vector3d old_velocity = state_.segment(3, 3);
   Eigen::Vector3d old_attitude = state_.segment(6, 3);
@@ -482,42 +494,52 @@ void KFDisturbanceObserver::systemDynamics(double dt)
 
   const Eigen::Vector3d thrust(0.0, 0.0, this->roll_pitch_yaw_thrust_cmd_(3));
 
-  const Eigen::Vector3d acceleration = rotation_matrix_ * thrust + Eigen::Vector3d(0, 0, -kGravity)
-      + this->drag_coefficients_matrix_ * old_velocity + old_external_forces;
+  const Eigen::Vector3d acceleration =
+      rotation_matrix_ * thrust + Eigen::Vector3d(0, 0, -kGravity) +
+      this->drag_coefficients_matrix_ * old_velocity + old_external_forces;
 
   const Eigen::Vector3d new_velocity = old_velocity + acceleration * dt;
 
-  const Eigen::Vector3d new_position = old_position + old_velocity * dt
-      + 0.5 * acceleration * dt * dt;
+  const Eigen::Vector3d new_position =
+      old_position + old_velocity * dt + 0.5 * acceleration * dt * dt;
 
   Eigen::Vector3d angular_acceleration;
-  angular_acceleration(0) = -2.0 * roll_damping_ * roll_omega_ * old_omega(0)
-      - roll_omega_ * roll_omega_ * old_attitude(0)
-      + roll_gain_ * roll_omega_ * roll_omega_ * roll_pitch_yaw_thrust_cmd_(0)
-      + old_external_moments(0);
+  angular_acceleration(0) =
+      -2.0 * roll_damping_ * roll_omega_ * old_omega(0) -
+      roll_omega_ * roll_omega_ * old_attitude(0) +
+      roll_gain_ * roll_omega_ * roll_omega_ * roll_pitch_yaw_thrust_cmd_(0) +
+      old_external_moments(0);
 
-  angular_acceleration(1) = -2.0 * pitch_damping_ * pitch_omega_ * old_omega(1)
-      - pitch_omega_ * pitch_omega_ * old_attitude(1)
-      + pitch_gain_ * pitch_omega_ * pitch_omega_ * roll_pitch_yaw_thrust_cmd_(1)
-      + old_external_moments(1);
+  angular_acceleration(1) =
+      -2.0 * pitch_damping_ * pitch_omega_ * old_omega(1) -
+      pitch_omega_ * pitch_omega_ * old_attitude(1) +
+      pitch_gain_ * pitch_omega_ * pitch_omega_ *
+          roll_pitch_yaw_thrust_cmd_(1) +
+      old_external_moments(1);
 
-  angular_acceleration(2) = -2.0 * yaw_damping_ * yaw_omega_ * old_omega(2)
-      - yaw_omega_ * yaw_omega_ * old_attitude(2)
-      + yaw_gain_ * yaw_omega_ * yaw_omega_ * roll_pitch_yaw_thrust_cmd_(2)
-      + old_external_moments(2);
+  angular_acceleration(2) =
+      -2.0 * yaw_damping_ * yaw_omega_ * old_omega(2) -
+      yaw_omega_ * yaw_omega_ * old_attitude(2) +
+      yaw_gain_ * yaw_omega_ * yaw_omega_ * roll_pitch_yaw_thrust_cmd_(2) +
+      old_external_moments(2);
 
   const Eigen::Vector3d new_omega = old_omega + angular_acceleration * dt;
 
-  const Eigen::Vector3d new_attitude = old_attitude + old_omega * dt
-      + 0.5 * angular_acceleration * dt * dt;
+  Eigen::Vector3d new_attitude =
+      old_attitude + old_omega * dt + 0.5 * angular_acceleration * dt * dt;
+
+  //yaw wrap
+  new_attitude(3) = fmod(new_attitude(3) + M_PI, (2.0 * M_PI)) - M_PI;
 
   const Eigen::Vector3d new_external_forces = old_external_forces;
   const Eigen::Vector3d new_external_moments = old_external_moments;
 
-  //Eigen::Vector3d new_external_forces = exp(-0.01/2.0 )*old_external_forces; //make external forces decay
-  //Eigen::Vector3d new_external_moments = exp(-0.01/2.0 )*old_external_moments; //make external moments decay
+  // Eigen::Vector3d new_external_forces = exp(-0.01/2.0 )*old_external_forces;
+  // //make external forces decay
+  // Eigen::Vector3d new_external_moments = exp(-0.01/2.0
+  // )*old_external_moments; //make external moments decay
 
-  //Update the state vector
+  // Update the state vector
 
   predicted_state_.segment(0, 3) = new_position;
   predicted_state_.segment(3, 3) = new_velocity;
@@ -525,11 +547,10 @@ void KFDisturbanceObserver::systemDynamics(double dt)
   predicted_state_.segment(9, 3) = new_omega;
   predicted_state_.segment(12, 3) = new_external_forces;
   predicted_state_.segment(15, 3) = new_external_moments;
-
 }
 
-void KFDisturbanceObserver::getEstimatedState(Eigen::VectorXd* estimated_state) const
-{
+void KFDisturbanceObserver::getEstimatedState(
+    Eigen::VectorXd* estimated_state) const {
   assert(estimated_state);
   assert(initialized_);
 
@@ -537,8 +558,5 @@ void KFDisturbanceObserver::getEstimatedState(Eigen::VectorXd* estimated_state) 
   *estimated_state = this->state_;
 }
 
-KFDisturbanceObserver::~KFDisturbanceObserver()
-{
-}
-
+KFDisturbanceObserver::~KFDisturbanceObserver() {}
 }
