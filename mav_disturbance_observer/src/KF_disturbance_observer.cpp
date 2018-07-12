@@ -415,6 +415,8 @@ bool KFDisturbanceObserver::updateEstimator() {
   measurements_(8) = fmod(measurements_(8) - state_(8) + M_PI, (2.0 * M_PI)) -
                      M_PI + state_(8);
 
+  predicted_state_(8) = fmod(predicted_state_(8) + M_PI, (2.0 * M_PI)) - M_PI;
+
   // Update with measurements
   state_ = predicted_state_ + K_ * (measurements_ - H_ * state_);
 
