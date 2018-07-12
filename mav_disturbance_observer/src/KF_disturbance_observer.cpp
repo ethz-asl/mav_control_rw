@@ -418,6 +418,8 @@ bool KFDisturbanceObserver::updateEstimator() {
   // Update with measurements
   state_ = predicted_state_ + K_ * (measurements_ - H_ * state_);
 
+  state_(8) = fmod(state_(8) + M_PI, (2.0 * M_PI)) - M_PI;
+
   // Update covariance
   state_covariance_ =
       (Eigen::Matrix<double, kStateSize, kStateSize>::Identity() - K_ * H_) *
@@ -525,11 +527,8 @@ void KFDisturbanceObserver::systemDynamics(double dt) {
 
   const Eigen::Vector3d new_omega = old_omega + angular_acceleration * dt;
 
-  Eigen::Vector3d new_attitude =
+  const Eigen::Vector3d new_attitude =
       old_attitude + old_omega * dt + 0.5 * angular_acceleration * dt * dt;
-
-  //yaw wrap
-  new_attitude(3) = fmod(new_attitude(3) + M_PI, (2.0 * M_PI)) - M_PI;
 
   const Eigen::Vector3d new_external_forces = old_external_forces;
   const Eigen::Vector3d new_external_moments = old_external_moments;
