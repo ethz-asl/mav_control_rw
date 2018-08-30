@@ -108,6 +108,16 @@ To run the controller with the multi sensor fusion (MSF) framewok (https://githu
 
 Don't forget to initialize MSF. 
 
+Supported autopilots
+------
+### Asctec Research Platforms
+This control will work as is with the ros interface to the now discontinued Asctec research platforms (Hummingbird, Pelican, Firefly and Neo). 
+
+### Pixhawk
+This controller requires some small modifications to the PX4 firmware to allow yaw rate inputs. A modified version of the firmware can be found [here](https://github.com/ethz-asl/ethzasl_mav_px4). The firmware is interfaced with through a [modified mavros node](https://github.com/ethz-asl/mavros).
+
+### DJI
+The controller can interface with DJI platforms through our [mav_dji_ros_interface](https://github.com/ethz-asl/mav_dji_ros_interface)
 
 Published and subscribed topics
 ------
