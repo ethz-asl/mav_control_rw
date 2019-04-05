@@ -30,10 +30,16 @@ RcInterfaceAci::RcInterfaceAci(const ros::NodeHandle& nh)
 
 void RcInterfaceAci::rcCallback(const sensor_msgs::JoyConstPtr& msg)
 {
+  static bool wasOffboardControlEnabled = false;
   is_on_ = isRcOn(msg);
   last_data_.timestamp = msg->header.stamp;
 
   if (is_on_) {
+
+    // Update previous RC state
+    if(msg->axes[4] == 1 && msg->axes[5] == 1) //msg->axes[4](Serial On)=1, msg->axes[5](F-mode) == 1
+      wasOffboardControlEnabled = true;
+    
     last_data_.right_up_down = msg->axes[0];
     last_data_.right_side = -msg->axes[1];
     last_data_.left_up_down = msg->axes[2];
@@ -53,7 +59,21 @@ void RcInterfaceAci::rcCallback(const sensor_msgs::JoyConstPtr& msg)
 
     last_data_.wheel = msg->axes[6];
   }
-  else {  //set to zero if RC is off
+    else if(wasOffboardControlEnabled)
+  {
+    ROS_WARN_STREAM_THROTTLE(5.0, "Detected RC Off -- Maintaining Off-board Control Mode.");
+    //Setting stick values explicityly to zero
+    last_data_.right_up_down = 0.0;
+    last_data_.right_side = 0.0;
+    last_data_.left_up_down = 0.0;
+    last_data_.left_side = 0.0;
+    //Keep Control interface on
+    last_data_.control_interface = RcData::ControlInterface::ON;
+    //Maintain Position control mode
+    last_data_.control_mode = RcData::ControlMode::POSITION_CONTROL;
+  }
+  else 
+  {  //set to zero if RC is off
     ROS_WARN_STREAM_THROTTLE(5.0, "Detected RC Off.");
     last_data_.right_up_down = 0.0;
     last_data_.right_side = 0.0;
